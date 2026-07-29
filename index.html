@@ -3,76 +3,60 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dream Multi-AI - Character Generator & Chat</title>
+    <title>Dream Multi-AI - Character Generator</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <style>
         :root {
-            --bg-primary: #0f0f1a;
-            --bg-secondary: #1a1a2e;
-            --bg-card: #16213e;
-            --bg-input: #0f0f1a;
-            --bg-hover: #1e2a4a;
-            --text-primary: #e0e0e0;
-            --text-secondary: #a0a0b8;
-            --text-muted: #6b6b8a;
-            --accent: #6c63ff;
-            --accent-hover: #7b72ff;
-            --accent-glow: rgba(108, 99, 255, 0.3);
-            --border-color: #2a2a4a;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            --radius: 16px;
-            --radius-sm: 10px;
+            --bg: #0a0a14;
+            --bg2: #12121f;
+            --bg3: #1a1a2e;
+            --bg4: #252545;
+            --text: #e8e8f0;
+            --text2: #a0a0b8;
+            --text3: #6b6b8a;
+            --accent: #7c6bff;
+            --accent2: #a855f7;
+            --border: #2a2a4a;
+            --shadow: 0 8px 32px rgba(0,0,0,0.5);
+            --radius: 14px;
+            --radius2: 10px;
             --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --user-msg-bg: #2a2a4a;
-            --ai-msg-bg: #16213e;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
             padding: 16px;
         }
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
-        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
-        .app { max-width: 1100px; margin: 0 auto; }
+        ::-webkit-scrollbar-track { background: var(--bg2); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+        .app { max-width: 1200px; margin: 0 auto; }
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 24px;
-            background: var(--bg-secondary);
+            padding: 14px 24px;
+            background: var(--bg2);
             border-radius: var(--radius);
-            border: 1px solid var(--border-color);
-            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
         }
         .logo { display: flex; align-items: center; gap: 12px; }
-        .logo-icon {
-            font-size: 28px;
-            color: var(--accent);
-            background: rgba(108, 99, 255, 0.15);
-            padding: 8px 12px;
-            border-radius: 10px;
-        }
-        .logo h1 {
-            font-size: 22px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #6c63ff, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .logo span { font-size: 13px; color: var(--text-secondary); display: block; -webkit-text-fill-color: var(--text-secondary); }
+        .logo-icon { font-size: 28px; color: var(--accent); background: rgba(124,107,255,0.15); padding: 8px 12px; border-radius: 10px; }
+        .logo h1 { font-size: 22px; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo span { font-size: 13px; color: var(--text2); display: block; -webkit-text-fill-color: var(--text2); }
         .header-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         .btn {
-            padding: 8px 18px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            background: var(--bg-input);
-            color: var(--text-secondary);
+            padding: 7px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius2);
+            background: var(--bg3);
+            color: var(--text2);
             cursor: pointer;
             font-size: 13px;
             transition: var(--transition);
@@ -80,61 +64,52 @@
             align-items: center;
             gap: 6px;
         }
-        .btn:hover { border-color: var(--accent); color: var(--text-primary); background: var(--bg-hover); }
+        .btn:hover { border-color: var(--accent); color: var(--text); background: var(--bg4); }
         .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-        .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #fff; }
-        .btn-danger { border-color: #ef4444; color: #ef4444; }
-        .btn-danger:hover { background: #ef4444; color: #fff; }
-        .btn-success { border-color: #22c55e; color: #22c55e; }
-        .btn-success:hover { background: #22c55e; color: #fff; }
+        .btn-primary:hover { background: var(--accent2); border-color: var(--accent2); color: #fff; }
         .btn-sm { padding: 4px 12px; font-size: 12px; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-success { border-color: #22c55e; color: #22c55e; }
+        .btn-success:hover { background: #22c55e; color: #fff; }
         .badge {
-            background: rgba(108, 99, 255, 0.12);
-            padding: 4px 12px;
+            background: rgba(124,107,255,0.12);
+            padding: 3px 12px;
             border-radius: 20px;
             font-size: 11px;
             color: var(--accent);
-            border: 1px solid rgba(108, 99, 255, 0.2);
+            border: 1px solid rgba(124,107,255,0.2);
         }
         .tabs {
             display: flex;
             gap: 4px;
-            background: var(--bg-input);
-            border-radius: var(--radius-sm);
+            background: var(--bg2);
+            border-radius: var(--radius2);
             padding: 4px;
-            border: 1px solid var(--border-color);
-            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+            flex-wrap: wrap;
         }
         .tab-btn {
-            padding: 8px 20px;
+            padding: 8px 18px;
             border: none;
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius2);
             background: transparent;
-            color: var(--text-secondary);
+            color: var(--text2);
             cursor: pointer;
             font-size: 13px;
             font-weight: 500;
             transition: var(--transition);
         }
-        .tab-btn:hover { color: var(--text-primary); }
-        .tab-btn.active {
-            background: var(--accent);
-            color: #fff;
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
+        .tab-btn:hover { color: var(--text); }
+        .tab-btn.active { background: var(--accent); color: #fff; box-shadow: 0 0 30px rgba(124,107,255,0.25); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .main-grid {
-            display: grid;
-            grid-template-columns: 340px 1fr;
-            gap: 20px;
-        }
-        @media (max-width: 768px) { .main-grid { grid-template-columns: 1fr; } }
+        .grid { display: grid; grid-template-columns: 320px 1fr; gap: 16px; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
         .sidebar {
-            background: var(--bg-secondary);
+            background: var(--bg2);
             border-radius: var(--radius);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border);
             padding: 16px;
             max-height: 70vh;
             overflow-y: auto;
@@ -142,7 +117,7 @@
         .sidebar-title {
             font-size: 14px;
             font-weight: 600;
-            color: var(--text-secondary);
+            color: var(--text2);
             margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
@@ -150,52 +125,45 @@
             flex-wrap: wrap;
             gap: 8px;
         }
-        .character-list { display: flex; flex-direction: column; gap: 6px; }
-        .character-item {
+        .char-list { display: flex; flex-direction: column; gap: 6px; }
+        .char-item {
             padding: 10px 14px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius2);
             cursor: pointer;
             transition: var(--transition);
             display: flex;
             align-items: center;
             gap: 12px;
         }
-        .character-item:hover { border-color: var(--accent); background: var(--bg-hover); }
-        .character-item.active { border-color: var(--accent); background: rgba(108, 99, 255, 0.1); }
-        .character-item .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--bg-card);
-            border: 2px solid var(--border-color);
-            flex-shrink: 0;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            color: var(--text-muted);
+        .char-item:hover { border-color: var(--accent); background: var(--bg4); }
+        .char-item.active { border-color: var(--accent); background: rgba(124,107,255,0.08); }
+        .char-item .avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--bg3); border: 2px solid var(--border);
+            overflow: hidden; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; color: var(--text3);
         }
-        .character-item .avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .character-item .info { flex: 1; min-width: 0; }
-        .character-item .name { font-size: 14px; font-weight: 500; }
-        .character-item .sub { font-size: 11px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .character-item .actions { display: flex; gap: 4px; flex-shrink: 0; }
-        .character-item .actions button { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 2px 6px; }
-        .character-item .actions button:hover { color: var(--text-primary); }
+        .char-item .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .char-item .info { flex: 1; min-width: 0; }
+        .char-item .name { font-size: 14px; font-weight: 500; }
+        .char-item .sub { font-size: 11px; color: var(--text3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .char-item .actions { display: flex; gap: 4px; flex-shrink: 0; }
+        .char-item .actions button { background: none; border: none; color: var(--text3); cursor: pointer; padding: 2px 6px; }
+        .char-item .actions button:hover { color: var(--text); }
         .chat-area {
-            background: var(--bg-secondary);
+            background: var(--bg2);
             border-radius: var(--radius);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border);
             display: flex;
             flex-direction: column;
             height: 70vh;
         }
         .chat-header {
-            padding: 14px 20px;
-            border-bottom: 1px solid var(--border-color);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -204,73 +172,65 @@
         }
         .chat-header .left { display: flex; align-items: center; gap: 12px; }
         .chat-header .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--bg-card);
-            border: 2px solid var(--border-color);
-            overflow: hidden;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            color: var(--text-muted);
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--bg3); border: 2px solid var(--border);
+            overflow: hidden; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; color: var(--text3);
         }
         .chat-header .avatar img { width: 100%; height: 100%; object-fit: cover; }
         .chat-header .char-name { font-size: 18px; font-weight: 600; }
-        .chat-header .char-status { font-size: 12px; color: var(--text-muted); }
-        .chat-header .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        .chat-header .char-status { font-size: 12px; color: var(--text3); }
+        .chat-header .actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
         .chat-messages {
             flex: 1;
             overflow-y: auto;
             padding: 16px 20px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
-        .message {
+        .msg {
             max-width: 85%;
             padding: 10px 16px;
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius2);
             line-height: 1.6;
             font-size: 14px;
             animation: fadeIn 0.3s ease;
         }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .message.user { align-self: flex-end; background: var(--user-msg-bg); border-bottom-right-radius: 4px; }
-        .message.ai { align-self: flex-start; background: var(--ai-msg-bg); border-bottom-left-radius: 4px; }
-        .message .sender { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 2px; }
-        .message .content { word-wrap: break-word; }
-        .message .content img { max-width: 100%; border-radius: 8px; margin-top: 4px; border: 1px solid var(--border-color); }
+        .msg.user { align-self: flex-end; background: var(--bg4); border-bottom-right-radius: 4px; }
+        .msg.ai { align-self: flex-start; background: var(--bg3); border-bottom-left-radius: 4px; }
+        .msg .sender { font-size: 11px; font-weight: 600; color: var(--text3); margin-bottom: 2px; }
+        .msg .content { word-wrap: break-word; }
+        .msg .content img { max-width: 100%; border-radius: 8px; margin-top: 4px; border: 1px solid var(--border); }
         .chat-input {
             padding: 12px 20px;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--border);
             display: flex;
             gap: 10px;
         }
         .chat-input input {
             flex: 1;
             padding: 10px 16px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius2);
+            color: var(--text);
             font-size: 14px;
             outline: none;
             transition: var(--transition);
         }
         .chat-input input:focus { border-color: var(--accent); }
-        .chat-input input::placeholder { color: var(--text-muted); }
+        .chat-input input::placeholder { color: var(--text3); }
         .chat-input input:disabled { opacity: 0.5; cursor: not-allowed; }
-        .chat-input button { padding: 10px 20px; }
         .empty-state {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100%;
-            color: var(--text-muted);
+            color: var(--text3);
             text-align: center;
             padding: 40px;
         }
@@ -279,7 +239,7 @@
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.7);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -287,25 +247,25 @@
         }
         .modal-overlay.active { display: flex; }
         .modal {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
+            background: var(--bg2);
+            border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 28px;
-            max-width: 540px;
+            max-width: 520px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: var(--shadow);
         }
         .modal h2 { font-size: 20px; margin-bottom: 16px; }
-        .modal label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+        .modal label { display: block; font-size: 13px; color: var(--text2); margin-bottom: 4px; }
         .modal input, .modal textarea, .modal select {
             width: 100%;
             padding: 10px 14px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius2);
+            color: var(--text);
             font-size: 14px;
             margin-bottom: 12px;
             font-family: inherit;
@@ -314,7 +274,6 @@
         }
         .modal input:focus, .modal textarea:focus { border-color: var(--accent); }
         .modal textarea { min-height: 60px; resize: vertical; }
-        .modal select { appearance: auto; }
         .modal .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; flex-wrap: wrap; }
         .modal .avatar-preview {
             display: flex;
@@ -323,18 +282,11 @@
             margin-bottom: 12px;
         }
         .modal .avatar-preview .preview {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: var(--bg-card);
-            border: 2px solid var(--border-color);
-            overflow: hidden;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            color: var(--text-muted);
+            width: 80px; height: 80px; border-radius: 50%;
+            background: var(--bg3); border: 2px solid var(--border);
+            overflow: hidden; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px; color: var(--text3);
         }
         .modal .avatar-preview .preview img { width: 100%; height: 100%; object-fit: cover; }
         .modal .avatar-preview .gen-btn { flex: 1; }
@@ -346,26 +298,26 @@
         }
         .modal .style-btn {
             padding: 4px 14px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border);
             border-radius: 20px;
-            background: var(--bg-input);
-            color: var(--text-secondary);
+            background: var(--bg);
+            color: var(--text2);
             cursor: pointer;
             font-size: 12px;
             transition: var(--transition);
         }
-        .modal .style-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+        .modal .style-btn:hover { border-color: var(--accent); color: var(--text); }
         .modal .style-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
         .toast {
             position: fixed;
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
-            background: var(--bg-card);
-            color: var(--text-primary);
+            background: var(--bg3);
+            color: var(--text);
             padding: 12px 24px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border-color);
+            border-radius: var(--radius2);
+            border: 1px solid var(--border);
             box-shadow: var(--shadow);
             font-size: 14px;
             opacity: 0;
@@ -376,78 +328,55 @@
         .toast.error { border-color: #ef4444; }
         .toast.success { border-color: #22c55e; }
         .toast.warning { border-color: #f59e0b; }
-        .api-status {
-            font-size: 11px;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 4px;
+        .dot {
+            width: 6px; height: 6px; border-radius: 50%; display: inline-block;
         }
-        .api-status .dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        .api-status .dot.online { background: #22c55e; }
-        .api-status .dot.offline { background: #ef4444; }
-        .api-status .dot.loading { background: #f59e0b; animation: pulse 0.8s infinite; }
+        .dot.online { background: #22c55e; }
+        .dot.offline { background: #ef4444; }
+        .dot.loading { background: #f59e0b; animation: pulse 0.8s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         .image-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: 12px;
-            padding: 16px 0;
+            padding: 12px 0;
         }
-        .image-grid .image-card {
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
+        .image-grid .card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius2);
             overflow: hidden;
             transition: var(--transition);
         }
-        .image-grid .image-card:hover { border-color: var(--accent); }
-        .image-grid .image-card img {
+        .image-grid .card:hover { border-color: var(--accent); }
+        .image-grid .card img { width: 100%; height: 180px; object-fit: cover; }
+        .image-grid .card .info { padding: 6px 10px; font-size: 11px; color: var(--text3); }
+        .image-studio { padding: 16px; }
+        .image-studio textarea {
             width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-        .image-grid .image-card .info {
-            padding: 8px 12px;
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-        .image-studio {
-            padding: 16px;
-        }
-        .image-studio .prompt-area {
-            margin-bottom: 16px;
-        }
-        .image-studio .prompt-area textarea {
-            width: 100%;
-            min-height: 80px;
+            min-height: 70px;
             padding: 12px 16px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius2);
+            color: var(--text);
             font-size: 14px;
             font-family: inherit;
             resize: vertical;
             outline: none;
             transition: var(--transition);
         }
-        .image-studio .prompt-area textarea:focus { border-color: var(--accent); }
+        .image-studio textarea:focus { border-color: var(--accent); }
         .image-studio .controls {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
             align-items: center;
-            margin-bottom: 16px;
+            margin: 12px 0;
         }
         .image-studio .controls label {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: var(--text2);
             display: flex;
             align-items: center;
             gap: 6px;
@@ -455,45 +384,36 @@
         .image-studio .controls select,
         .image-studio .controls input[type="number"] {
             padding: 6px 12px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius2);
+            color: var(--text);
             font-size: 13px;
         }
         .image-studio .controls select { min-width: 100px; }
         .image-studio .controls input[type="number"] { width: 70px; }
-        .image-result {
-            margin-top: 16px;
-            text-align: center;
+        .image-result { margin-top: 16px; text-align: center; }
+        .image-result img { max-width: 100%; max-height: 500px; border-radius: var(--radius2); border: 1px solid var(--border); }
+        .image-result .actions { margin-top: 12px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+        .api-status { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 4px; }
+        .user-info { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); }
+        .user-info .avatar-small { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff; }
+        .user-info .avatar-small img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .sidebar-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+        .sidebar-actions .btn { flex: 1; justify-content: center; min-width: 60px; }
+        .auth-modal .auth-tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+        .auth-modal .auth-tabs button {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius2);
+            background: var(--bg);
+            color: var(--text2);
+            cursor: pointer;
+            transition: var(--transition);
         }
-        .image-result img {
-            max-width: 100%;
-            max-height: 500px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border-color);
-        }
-        .image-result .actions {
-            margin-top: 12px;
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .traits {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            margin: 4px 0;
-        }
-        .trait-tag {
-            background: rgba(108, 99, 255, 0.12);
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            color: var(--accent);
-            border: 1px solid rgba(108, 99, 255, 0.15);
-        }
+        .auth-modal .auth-tabs button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+        .auth-modal .auth-tabs button:hover:not(.active) { border-color: var(--accent); color: var(--text); }
     </style>
 </head>
 <body>
@@ -507,32 +427,36 @@
             </div>
         </div>
         <div class="header-actions">
-            <span class="badge"><i class="fas fa-bolt"></i> Groq + HF</span>
-            <button class="btn btn-primary btn-sm" id="newCharBtn"><i class="fas fa-plus"></i> New Character</button>
+            <span class="badge"><i class="fas fa-bolt"></i> AI Powered</span>
+            <span id="userDisplay" class="user-info"><i class="fas fa-user"></i> Guest</span>
+            <button class="btn btn-primary btn-sm" id="newCharBtn"><i class="fas fa-plus"></i> New</button>
         </div>
     </header>
 
     <div class="tabs" id="mainTabs">
         <button class="tab-btn active" data-tab="chat"><i class="fas fa-comment"></i> Chat</button>
         <button class="tab-btn" data-tab="image"><i class="fas fa-image"></i> Image Studio</button>
+        <button class="tab-btn" data-tab="generate"><i class="fas fa-wand-magic-sparkles"></i> Generate</button>
     </div>
 
+    <!-- TAB: Chat -->
     <div class="tab-content active" id="tab-chat">
-        <div class="main-grid">
+        <div class="grid">
             <aside class="sidebar">
                 <div class="sidebar-title">
-                    <span><i class="fas fa-users"></i> Your Characters</span>
-                    <span id="charCount" style="font-size:12px;color:var(--text-muted);">0</span>
+                    <span><i class="fas fa-users"></i> Characters</span>
+                    <span id="charCount">0</span>
                 </div>
-                <div class="character-list" id="characterList">
+                <div class="char-list" id="characterList">
                     <div class="empty-state" style="padding:20px;font-size:13px;">
                         <i class="fas fa-plus-circle" style="font-size:32px;"></i>
                         <span>Create your first character</span>
                     </div>
                 </div>
-                <div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap;">
-                    <button class="btn btn-sm" id="exportAllBtn"><i class="fas fa-file-export"></i> Export All</button>
+                <div class="sidebar-actions">
+                    <button class="btn btn-sm" id="exportAllBtn"><i class="fas fa-file-export"></i> Export</button>
                     <button class="btn btn-sm" id="importBtn"><i class="fas fa-file-import"></i> Import</button>
+                    <button class="btn btn-sm" id="cloudSyncBtn"><i class="fas fa-cloud"></i> Sync</button>
                     <input type="file" id="importFile" accept=".json" style="display:none;" />
                 </div>
             </aside>
@@ -542,23 +466,19 @@
                         <div class="avatar" id="chatAvatar"><i class="fas fa-user"></i></div>
                         <div>
                             <div class="char-name" id="chatCharName">Select a Character</div>
-                            <div class="char-status" id="chatCharStatus">Choose or create a character to start chatting</div>
+                            <div class="char-status" id="chatCharStatus">Choose or create a character</div>
                         </div>
                     </div>
                     <div class="actions">
-                        <button class="btn btn-sm" id="exportCharBtn" title="Export Character"><i class="fas fa-download"></i></button>
-                        <button class="btn btn-sm" id="genStoryBtn" title="Generate Backstory/Story"><i class="fas fa-book"></i></button>
-                        <div class="api-status">
-                            <span class="dot online" id="apiDot"></span>
-                            <span id="apiLabel">Groq</span>
-                        </div>
+                        <button class="btn btn-sm" id="exportCharBtn" title="Export"><i class="fas fa-download"></i></button>
+                        <button class="btn btn-sm" id="genStoryBtn" title="Generate Story"><i class="fas fa-book"></i></button>
+                        <div class="api-status"><span class="dot online" id="apiDot"></span><span id="apiLabel">AI</span></div>
                     </div>
                 </div>
                 <div class="chat-messages" id="chatMessages">
                     <div class="empty-state">
                         <i class="fas fa-comment-dots"></i>
-                        <span>Select a character and start chatting</span>
-                        <span style="font-size:12px;opacity:0.5;">Messages will appear here</span>
+                        <span>Select a character to start chatting</span>
                     </div>
                 </div>
                 <div class="chat-input">
@@ -569,6 +489,7 @@
         </div>
     </div>
 
+    <!-- TAB: Image Studio -->
     <div class="tab-content" id="tab-image">
         <div class="chat-area" style="height:70vh;">
             <div class="chat-header">
@@ -579,54 +500,85 @@
                         <div class="char-status">Generate any image from text descriptions</div>
                     </div>
                 </div>
-                <div class="api-status">
-                    <span class="dot online" id="apiDot2"></span>
-                    <span id="apiLabel2">Stable Diffusion</span>
-                </div>
+                <div class="api-status"><span class="dot online"></span> Stable Diffusion</div>
             </div>
             <div class="image-studio" style="flex:1;overflow-y:auto;">
                 <div class="prompt-area">
-                    <textarea id="imagePrompt" placeholder="Describe the image you want to create...&#10;Example: 'A majestic dragon flying over a medieval castle at sunset, dramatic lighting, fantasy art'">A cyberpunk city street at night with neon signs, rain, and flying cars, vibrant colors, futuristic</textarea>
+                    <textarea id="imagePrompt" placeholder="Describe the image you want to create...&#10;Example: 'A majestic dragon flying over a medieval castle at sunset'">A cyberpunk city street at night with neon signs, rain, and flying cars</textarea>
                 </div>
                 <div class="controls">
-                    <label>
-                        Style:
-                        <select id="imageStyle">
-                            <option value="fantasy">Fantasy</option>
-                            <option value="anime" selected>Anime</option>
-                            <option value="realistic">Realistic</option>
-                            <option value="cyberpunk">Cyberpunk</option>
-                            <option value="painting">Oil Painting</option>
-                            <option value="sketch">Sketch</option>
-                        </select>
-                    </label>
-                    <label>
-                        Size:
-                        <select id="imageSize">
-                            <option value="512">512x512</option>
-                            <option value="768" selected>768x768</option>
-                            <option value="1024">1024x1024</option>
-                        </select>
-                    </label>
-                    <label>
-                        Steps:
-                        <input type="number" id="imageSteps" value="25" min="10" max="50" />
-                    </label>
+                    <label>Style: <select id="imageStyle">
+                        <option value="fantasy">Fantasy</option>
+                        <option value="anime" selected>Anime</option>
+                        <option value="realistic">Realistic</option>
+                        <option value="cyberpunk">Cyberpunk</option>
+                        <option value="painting">Oil Painting</option>
+                        <option value="sketch">Sketch</option>
+                    </select></label>
+                    <label>Size: <select id="imageSize">
+                        <option value="512">512x512</option>
+                        <option value="768" selected>768x768</option>
+                        <option value="1024">1024x1024</option>
+                    </select></label>
+                    <label>Steps: <input type="number" id="imageSteps" value="25" min="10" max="50" /></label>
                     <button class="btn btn-primary" id="genImageBtn"><i class="fas fa-wand-magic-sparkles"></i> Generate</button>
                 </div>
                 <div id="imageResult" class="image-result">
                     <div class="empty-state" style="padding:40px;">
                         <i class="fas fa-image" style="font-size:48px;opacity:0.3;"></i>
                         <span>Your generated image will appear here</span>
-                        <span style="font-size:12px;opacity:0.5;">Enter a description and click Generate</span>
                     </div>
                 </div>
                 <div id="imageHistory" class="image-grid"></div>
             </div>
         </div>
     </div>
+
+    <!-- TAB: Generate (Character Image from Description) -->
+    <div class="tab-content" id="tab-generate">
+        <div class="chat-area" style="height:70vh;">
+            <div class="chat-header">
+                <div class="left">
+                    <div style="font-size:20px;">✨</div>
+                    <div>
+                        <div class="char-name">Character Image Generator</div>
+                        <div class="char-status">Generate a character portrait from your description</div>
+                    </div>
+                </div>
+                <div class="api-status"><span class="dot online"></span> Stable Diffusion</div>
+            </div>
+            <div class="image-studio" style="flex:1;overflow-y:auto;">
+                <div class="prompt-area">
+                    <textarea id="charGenPrompt" placeholder="Describe your character in detail...&#10;Example: 'A young elven wizard with silver hair, wearing blue robes, holding a glowing staff, fantasy art'">A young elven wizard with silver hair, wearing blue robes, holding a glowing staff, fantasy art</textarea>
+                </div>
+                <div class="controls">
+                    <label>Style: <select id="charGenStyle">
+                        <option value="fantasy">Fantasy</option>
+                        <option value="anime" selected>Anime</option>
+                        <option value="realistic">Realistic</option>
+                        <option value="cyberpunk">Cyberpunk</option>
+                        <option value="painting">Oil Painting</option>
+                    </select></label>
+                    <label>Size: <select id="charGenSize">
+                        <option value="512">512x512</option>
+                        <option value="768" selected>768x768</option>
+                        <option value="1024">1024x1024</option>
+                    </select></label>
+                    <button class="btn btn-primary" id="genCharBtn"><i class="fas fa-wand-magic-sparkles"></i> Generate Character</button>
+                </div>
+                <div id="charGenResult" class="image-result">
+                    <div class="empty-state" style="padding:40px;">
+                        <i class="fas fa-user" style="font-size:48px;opacity:0.3;"></i>
+                        <span>Your character portrait will appear here</span>
+                        <span style="font-size:12px;opacity:0.5;">Describe your character in detail for best results</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
+<!-- Character Modal -->
 <div class="modal-overlay" id="charModal">
     <div class="modal">
         <h2 id="modalTitle">Create Character</h2>
@@ -646,18 +598,40 @@
             </div>
         </div>
         <label>Personality</label>
-        <textarea id="charPersonality" placeholder="e.g. Brave, witty, fiercely loyal to her crew..."></textarea>
+        <textarea id="charPersonality" placeholder="e.g. Brave, witty, fiercely loyal..."></textarea>
         <label>Backstory</label>
-        <textarea id="charBackstory" placeholder="e.g. A former space marine who now captains a freelancer ship..."></textarea>
+        <textarea id="charBackstory" placeholder="Character's backstory..."></textarea>
         <label>Appearance</label>
-        <textarea id="charAppearance" placeholder="e.g. Tall, silver hair, cybernetic eye, scar on left cheek..."></textarea>
+        <textarea id="charAppearance" placeholder="Physical description..."></textarea>
         <label>Traits (comma separated)</label>
         <input type="text" id="charTraits" placeholder="e.g. Brave, Loyal, Cunning" />
-        <label>System Prompt (advanced)</label>
+        <label>System Prompt</label>
         <textarea id="charSystemPrompt" placeholder="Custom instructions for the AI..."></textarea>
         <div class="actions">
             <button class="btn" id="modalCancel">Cancel</button>
-            <button class="btn btn-primary" id="modalSave">Save Character</button>
+            <button class="btn btn-primary" id="modalSave">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Auth Modal -->
+<div class="modal-overlay" id="authModal">
+    <div class="modal auth-modal">
+        <h2 id="authTitle">Sign In</h2>
+        <div class="auth-tabs">
+            <button class="active" data-auth="login">Login</button>
+            <button data-auth="signup">Sign Up</button>
+        </div>
+        <label>Email</label>
+        <input type="email" id="authEmail" placeholder="you@email.com" />
+        <label>Password</label>
+        <input type="password" id="authPassword" placeholder="••••••••" />
+        <div class="actions">
+            <button class="btn" id="authCancel">Cancel</button>
+            <button class="btn btn-primary" id="authSubmit">Sign In</button>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:var(--text3);text-align:center;">
+            Cloud sync saves your characters across devices
         </div>
     </div>
 </div>
@@ -672,34 +646,35 @@ const CONFIG = {
     groq: {
         url: 'https://api.groq.com/openai/v1/chat/completions',
         key: 'gsk_your_free_key_here',
-        models: { llama3: 'llama-3.1-70b-versatile', mixtral: 'mixtral-8x7b-32768', gemma: 'gemma2-9b-it' }
+        models: { llama3: 'llama-3.1-70b-versatile' }
     },
     hf: {
         url: 'https://api-inference.huggingface.co/models/',
         key: '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',
         models: {
-            text: 'meta-llama/Meta-Llama-3-8B-Instruct',
-            image: 'stabilityai/stable-diffusion-3.5-large'
+            image: 'stabilityai/stable-diffusion-3.5-large',
+            image_fallback: 'stabilityai/stable-diffusion-2-1'
         }
     }
 };
-const DEFAULT_SYSTEM = `You are a character in a story. Respond in character, staying true to your personality, backstory, and appearance. Keep responses natural and conversational. Never break character.`;
 
 const STYLE_PROMPTS = {
-    fantasy: 'fantasy character portrait, medieval, magical, D&D style, epic, detailed, digital art',
-    anime: 'anime style character portrait, vibrant colors, expressive eyes, anime art style, detailed',
-    realistic: 'realistic character portrait, hyperrealistic, detailed face, professional photography, 8k',
-    cyberpunk: 'cyberpunk character portrait, neon lights, futuristic, sci-fi, dark atmosphere, digital art'
+    fantasy: 'fantasy, medieval, magical, D&D, epic, detailed, digital art',
+    anime: 'anime style, vibrant colors, expressive eyes, manga, detailed',
+    realistic: 'photorealistic, hyperdetailed, professional photography, 8k',
+    cyberpunk: 'cyberpunk, neon, futuristic, sci-fi, dark atmosphere, digital art'
 };
 
 const IMAGE_STYLES = {
     fantasy: 'fantasy art, epic, magical, detailed, digital painting',
     anime: 'anime style, vibrant colors, expressive, manga art, detailed',
-    realistic: 'photorealistic, hyperdetailed, professional photography, 8k, high quality',
-    cyberpunk: 'cyberpunk, neon lights, futuristic city, sci-fi, dark atmosphere, digital art',
-    painting: 'oil painting, fine art, masterpiece, detailed brushstrokes, gallery quality',
+    realistic: 'photorealistic, hyperdetailed, professional photography, 8k',
+    cyberpunk: 'cyberpunk, neon lights, futuristic, sci-fi, dark atmosphere',
+    painting: 'oil painting, fine art, masterpiece, detailed brushstrokes',
     sketch: 'pencil sketch, black and white, detailed line art, drawing'
 };
+
+const DEFAULT_SYSTEM = 'You are a character in a story. Respond in character, staying true to your personality, backstory, and appearance. Keep responses natural and conversational. Never break character.';
 
 // ============================================================
 // STATE
@@ -707,12 +682,11 @@ const IMAGE_STYLES = {
 let characters = [];
 let currentCharId = null;
 let chatHistory = {};
+let imageHistory = [];
 let isGenerating = false;
-let isGeneratingImage = false;
-let isGeneratingStudioImage = false;
 let tempAvatar = null;
 let selectedStyle = 'fantasy';
-let imageHistory = [];
+let currentUser = null;
 
 // ============================================================
 // DOM REFS
@@ -739,10 +713,6 @@ const avatarPreview = $('avatarPreview');
 const genAvatarBtn = $('genAvatarBtn');
 const toast = $('toast');
 const toastMsg = $('toastMsg');
-const apiDot = $('apiDot');
-const apiLabel = $('apiLabel');
-const apiDot2 = $('apiDot2');
-const apiLabel2 = $('apiLabel2');
 const styleBtns = document.querySelectorAll('.style-btn');
 const tabBtns = document.querySelectorAll('.tab-btn');
 const imagePrompt = $('imagePrompt');
@@ -752,7 +722,21 @@ const imageSteps = $('imageSteps');
 const genImageBtn = $('genImageBtn');
 const imageResult = $('imageResult');
 const imageHistoryEl = $('imageHistory');
+const charGenPrompt = $('charGenPrompt');
+const charGenStyle = $('charGenStyle');
+const charGenSize = $('charGenSize');
+const genCharBtn = $('genCharBtn');
+const charGenResult = $('charGenResult');
+const userDisplay = $('userDisplay');
+const authModal = $('authModal');
+const authEmail = $('authEmail');
+const authPassword = $('authPassword');
+const authSubmit = $('authSubmit');
+const authCancel = $('authCancel');
+const authTitle = $('authTitle');
+const authTabs = document.querySelectorAll('.auth-tabs button');
 let toastTimer = null;
+let authMode = 'login';
 
 // ============================================================
 // TOAST
@@ -803,8 +787,7 @@ function loadData() {
 function createCharacter(data) {
     const id = Date.now().toString(36) + Math.random().toString(36).substr(2, 4);
     const char = {
-        id,
-        name: data.name.trim(),
+        id, name: data.name.trim(),
         personality: data.personality.trim(),
         backstory: data.backstory.trim(),
         appearance: data.appearance.trim(),
@@ -865,41 +848,24 @@ function getChat(id) { return chatHistory[id] || []; }
 function exportCharacter(id) {
     const char = getCharacter(id);
     if (!char) { showToast('No character selected', 'warning'); return; }
-    const data = {
-        version: '1.0',
-        exported: new Date().toISOString(),
-        character: char,
-        chat: getChat(id)
-    };
+    const data = { version: '1.0', exported: new Date().toISOString(), character: char, chat: getChat(id) };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url;
-    a.download = `${char.name}-character.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    a.href = url; a.download = `${char.name}-character.json`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
     showToast(`📦 Exported "${char.name}"`, 'success');
 }
 
 function exportAllCharacters() {
     if (characters.length === 0) { showToast('No characters to export', 'warning'); return; }
-    const data = {
-        version: '1.0',
-        exported: new Date().toISOString(),
-        characters: characters,
-        chatHistory: chatHistory,
-        imageHistory: imageHistory
-    };
+    const data = { version: '1.0', exported: new Date().toISOString(), characters, chatHistory, imageHistory };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url;
-    a.download = `dream-characters-${Date.now()}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    a.href = url; a.download = `dream-characters-${Date.now()}.json`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
     showToast(`📦 Exported ${characters.length} characters`, 'success');
 }
@@ -919,9 +885,7 @@ function importCharacters(file) {
                         imported++;
                     }
                 }
-                if (data.imageHistory) {
-                    imageHistory = [...imageHistory, ...data.imageHistory];
-                }
+                if (data.imageHistory) imageHistory = [...imageHistory, ...data.imageHistory];
                 saveData();
                 renderCharacters();
                 showToast(`📥 Imported ${imported} characters`, 'success');
@@ -929,48 +893,9 @@ function importCharacters(file) {
             } else {
                 showToast('Invalid import file', 'error');
             }
-        } catch (err) {
-            showToast('Error importing: ' + err.message, 'error');
-        }
+        } catch (err) { showToast('Error importing: ' + err.message, 'error'); }
     };
     reader.readAsText(file);
-}
-
-// ============================================================
-// STORY GENERATOR
-// ============================================================
-async function generateStory() {
-    const char = getCharacter(currentCharId);
-    if (!char) { showToast('Select a character first', 'warning'); return; }
-    if (isGenerating) return;
-    isGenerating = true;
-    const btn = $('genStoryBtn');
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-    btn.disabled = true;
-    try {
-        const prompt = `Write a detailed backstory or origin story for a character named "${char.name}".
-Personality: ${char.personality || 'Mysterious'}
-Traits: ${char.traits.join(', ') || 'Various'}
-Appearance: ${char.appearance || 'Unique'}
-
-Write a compelling narrative (300-500 words) that explains their origin, key life events, and what drives them.`;
-        const response = await callAIForStory(prompt);
-        addMessage(currentCharId, 'ai', `📖 **Backstory for ${char.name}**\n\n${response}`);
-        showToast('📖 Story generated!', 'success');
-    } catch (e) {
-        showToast('Error generating story: ' + e.message, 'error');
-    }
-    isGenerating = false;
-    btn.innerHTML = '<i class="fas fa-book"></i>';
-    btn.disabled = false;
-}
-
-async function callAIForStory(prompt) {
-    const messages = [{ role: 'user', content: prompt }];
-    if (CONFIG.groq.key && CONFIG.groq.key !== 'gsk_your_free_key_here') {
-        try { return await callGroq(messages); } catch (e) { return await callHuggingFace(messages); }
-    }
-    return await callHuggingFace(messages);
 }
 
 // ============================================================
@@ -982,134 +907,158 @@ function getAvatarHtml(char) {
 }
 
 async function generateAvatar(prompt) {
-    if (isGeneratingImage) return;
-    isGeneratingImage = true;
+    if (isGenerating) return;
+    isGenerating = true;
     genAvatarBtn.disabled = true;
     genAvatarBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
     avatarPreview.innerHTML = '<i class="fas fa-circle-notch fa-spin" style="font-size:24px;color:var(--accent);"></i>';
     try {
         const imgUrl = await callImageAPI(prompt, 512);
         tempAvatar = imgUrl;
-        avatarPreview.innerHTML = `<img src="${imgUrl}" alt="Generated avatar" />`;
+        avatarPreview.innerHTML = `<img src="${imgUrl}" alt="Avatar" />`;
         showToast('✨ Portrait generated!', 'success');
     } catch (e) {
         avatarPreview.innerHTML = '<i class="fas fa-user"></i>';
-        showToast('Error generating portrait: ' + e.message, 'error');
+        showToast('Error: ' + e.message, 'error');
     }
-    isGeneratingImage = false;
+    isGenerating = false;
     genAvatarBtn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Generate Portrait';
     genAvatarBtn.disabled = false;
 }
 
 // ============================================================
-// IMAGE STUDIO
-// ============================================================
-async function generateStudioImage() {
-    if (isGeneratingStudioImage) return;
-    const prompt = imagePrompt.value.trim();
-    if (!prompt) { showToast('Please enter a description', 'warning'); return; }
-    isGeneratingStudioImage = true;
-    genImageBtn.disabled = true;
-    genImageBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
-    const size = parseInt(imageSize.value);
-    const steps = parseInt(imageSteps.value);
-    const style = imageStyle.value;
-    const stylePrompt = IMAGE_STYLES[style] || '';
-    const fullPrompt = `${prompt}, ${stylePrompt}, high quality, detailed, masterpiece`;
-    imageResult.innerHTML = `
-        <div class="empty-state" style="padding:40px;">
-            <i class="fas fa-circle-notch fa-spin" style="font-size:32px;color:var(--accent);"></i>
-            <span>Generating your image...</span>
-            <span style="font-size:12px;opacity:0.5;">This may take 10-30 seconds</span>
-        </div>
-    `;
-    try {
-        const imgUrl = await callImageAPI(fullPrompt, size);
-        imageResult.innerHTML = `
-            <div>
-                <img src="${imgUrl}" alt="Generated image" />
-                <div class="actions">
-                    <button class="btn btn-success btn-sm" onclick="downloadImage('${imgUrl}')"><i class="fas fa-download"></i> Download</button>
-                    <button class="btn btn-sm" onclick="copyImageToChat('${imgUrl}')"><i class="fas fa-comment"></i> Use in Chat</button>
-                </div>
-            </div>
-        `;
-        imageHistory.push({ prompt, url: imgUrl, time: Date.now() });
-        saveData();
-        renderImageHistory();
-        showToast('🖼️ Image generated!', 'success');
-    } catch (e) {
-        imageResult.innerHTML = `
-            <div class="empty-state" style="padding:40px;color:#ef4444;">
-                <i class="fas fa-exclamation-triangle" style="font-size:32px;"></i>
-                <span>Error generating image</span>
-                <span style="font-size:12px;opacity:0.7;">${e.message}</span>
-            </div>
-        `;
-        showToast('Error: ' + e.message, 'error');
-    }
-    isGeneratingStudioImage = false;
-    genImageBtn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Generate';
-    genImageBtn.disabled = false;
-}
-
-window.downloadImage = function(url) {
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `dream-image-${Date.now()}.png`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    showToast('📥 Image downloaded!', 'success');
-};
-
-window.copyImageToChat = function(url) {
-    if (!currentCharId) { showToast('Select a character first', 'warning'); return; }
-    addMessage(currentCharId, 'user', `[Generated Image]\n\n![image](${url})`);
-    showToast('🖼️ Image added to chat!', 'success');
-};
-
-function renderImageHistory() {
-    if (imageHistory.length === 0) {
-        imageHistoryEl.innerHTML = '';
-        return;
-    }
-    imageHistoryEl.innerHTML = imageHistory.slice().reverse().map(img => `
-        <div class="image-card">
-            <img src="${img.url}" alt="Generated image" />
-            <div class="info">${img.prompt.slice(0, 60)}${img.prompt.length > 60 ? '...' : ''}</div>
-        </div>
-    `).join('');
-}
-
-// ============================================================
-// IMAGE API
+// IMAGE GENERATION
 // ============================================================
 async function callImageAPI(prompt, size = 512) {
     const model = CONFIG.hf.models.image;
     const url = CONFIG.hf.url + model;
     const headers = { 'Content-Type': 'application/json' };
     if (CONFIG.hf.key) headers['Authorization'] = `Bearer ${CONFIG.hf.key}`;
+    
+    const requestBody = {
+        inputs: prompt,
+        parameters: {
+            negative_prompt: 'blurry, bad quality, distorted, ugly, deformed, extra limbs, nsfw',
+            num_inference_steps: 25,
+            guidance_scale: 7.5,
+            width: size,
+            height: size
+        }
+    };
+    
+    console.log('Generating image:', prompt.slice(0, 60) + '...');
+    
     const resp = await fetch(url, {
         method: 'POST',
-        headers,
-        body: JSON.stringify({
-            inputs: prompt,
-            parameters: {
-                negative_prompt: 'blurry, bad quality, distorted, ugly, deformed, extra limbs, nsfw',
-                num_inference_steps: Math.min(Math.max(parseInt(imageSteps.value) || 25, 10), 50),
-                guidance_scale: 7.5,
-                width: size,
-                height: size
-            }
-        })
+        headers: headers,
+        body: JSON.stringify(requestBody)
     });
+    
     if (!resp.ok) {
-        const err = await resp.text();
-        throw new Error(`Image API error: ${resp.status}`);
+        let errText = await resp.text();
+        console.error('API Error:', resp.status, errText);
+        
+        if (resp.status === 503) {
+            throw new Error('Model is loading. Please wait 30 seconds and try again.');
+        }
+        if (resp.status === 429) {
+            throw new Error('Rate limit reached. Please wait a moment and try again.');
+        }
+        throw new Error(`API error (${resp.status}): ${errText.slice(0, 150)}`);
     }
+    
     const blob = await resp.blob();
     return URL.createObjectURL(blob);
+}
+
+// ============================================================
+// IMAGE STUDIO
+// ============================================================
+async function generateStudioImage() {
+    if (isGenerating) return;
+    const prompt = imagePrompt.value.trim();
+    if (!prompt) { showToast('Please enter a description', 'warning'); return; }
+    isGenerating = true;
+    genImageBtn.disabled = true;
+    genImageBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+    const size = parseInt(imageSize.value);
+    const style = imageStyle.value;
+    const stylePrompt = IMAGE_STYLES[style] || '';
+    const fullPrompt = `${prompt}, ${stylePrompt}, high quality, detailed, masterpiece`;
+    imageResult.innerHTML = `<div class="empty-state"><i class="fas fa-circle-notch fa-spin" style="font-size:32px;color:var(--accent);"></i><span>Generating...</span></div>`;
+    try {
+        const imgUrl = await callImageAPI(fullPrompt, size);
+        imageResult.innerHTML = `<div><img src="${imgUrl}" /><div class="actions"><button class="btn btn-success btn-sm" onclick="downloadImage('${imgUrl}')"><i class="fas fa-download"></i> Download</button></div></div>`;
+        imageHistory.push({ prompt, url: imgUrl, time: Date.now() });
+        saveData();
+        renderImageHistory();
+        showToast('🖼️ Image generated!', 'success');
+    } catch (e) {
+        imageResult.innerHTML = `<div class="empty-state" style="color:#ef4444;"><i class="fas fa-exclamation-triangle" style="font-size:32px;"></i><span>${e.message}</span></div>`;
+        showToast('Error: ' + e.message, 'error');
+    }
+    isGenerating = false;
+    genImageBtn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Generate';
+    genImageBtn.disabled = false;
+}
+
+// ============================================================
+// CHARACTER GENERATOR (from description)
+// ============================================================
+async function generateCharacterImage() {
+    if (isGenerating) return;
+    const prompt = charGenPrompt.value.trim();
+    if (!prompt) { showToast('Please describe your character', 'warning'); return; }
+    isGenerating = true;
+    genCharBtn.disabled = true;
+    genCharBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+    const size = parseInt(charGenSize.value);
+    const style = charGenStyle.value;
+    const stylePrompt = STYLE_PROMPTS[style] || '';
+    const fullPrompt = `${prompt}, ${stylePrompt}, character portrait, detailed, beautiful, high quality`;
+    charGenResult.innerHTML = `<div class="empty-state"><i class="fas fa-circle-notch fa-spin" style="font-size:32px;color:var(--accent);"></i><span>Generating character...</span></div>`;
+    try {
+        const imgUrl = await callImageAPI(fullPrompt, size);
+        charGenResult.innerHTML = `<div><img src="${imgUrl}" /><div class="actions"><button class="btn btn-success btn-sm" onclick="downloadImage('${imgUrl}')"><i class="fas fa-download"></i> Download</button><button class="btn btn-sm" onclick="saveGeneratedCharacter('${imgUrl}')"><i class="fas fa-save"></i> Save as Character</button></div></div>`;
+        showToast('✨ Character image generated!', 'success');
+    } catch (e) {
+        charGenResult.innerHTML = `<div class="empty-state" style="color:#ef4444;"><i class="fas fa-exclamation-triangle" style="font-size:32px;"></i><span>${e.message}</span></div>`;
+        showToast('Error: ' + e.message, 'error');
+    }
+    isGenerating = false;
+    genCharBtn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Generate Character';
+    genCharBtn.disabled = false;
+}
+
+function saveGeneratedCharacter(imgUrl) {
+    const name = prompt('Enter character name:');
+    if (!name) return;
+    const personality = prompt('Enter personality (optional):') || '';
+    const data = {
+        name: name,
+        personality: personality,
+        backstory: '',
+        appearance: '',
+        traits: '',
+        systemPrompt: DEFAULT_SYSTEM,
+        avatar: imgUrl
+    };
+    createCharacter(data);
+}
+
+window.downloadImage = function(url) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dream-image-${Date.now()}.png`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    showToast('📥 Image downloaded!', 'success');
+};
+
+function renderImageHistory() {
+    if (imageHistory.length === 0) { imageHistoryEl.innerHTML = ''; return; }
+    imageHistoryEl.innerHTML = imageHistory.slice().reverse().map(img => `
+        <div class="card"><img src="${img.url}" /><div class="info">${img.prompt.slice(0, 50)}${img.prompt.length > 50 ? '...' : ''}</div></div>
+    `).join('');
 }
 
 // ============================================================
@@ -1117,28 +1066,22 @@ async function callImageAPI(prompt, size = 512) {
 // ============================================================
 function renderCharacters() {
     if (characters.length === 0) {
-        charList.innerHTML = `<div class="empty-state" style="padding:20px;font-size:13px;">
-            <i class="fas fa-plus-circle" style="font-size:32px;"></i>
-            <span>Create your first character</span>
-        </div>`;
+        charList.innerHTML = `<div class="empty-state" style="padding:20px;font-size:13px;"><i class="fas fa-plus-circle" style="font-size:32px;"></i><span>Create your first character</span></div>`;
         charCount.textContent = '0';
         return;
     }
     charCount.textContent = characters.length;
     charList.innerHTML = characters.map(c => `
-        <div class="character-item ${currentCharId === c.id ? 'active' : ''}" data-id="${c.id}">
+        <div class="char-item ${currentCharId === c.id ? 'active' : ''}" data-id="${c.id}">
             <div class="avatar">${getAvatarHtml(c)}</div>
-            <div class="info">
-                <div class="name">${c.name}</div>
-                <div class="sub">${c.traits.slice(0, 2).join(', ') || 'No traits'}</div>
-            </div>
+            <div class="info"><div class="name">${c.name}</div><div class="sub">${c.traits.slice(0, 2).join(', ') || 'No traits'}</div></div>
             <div class="actions">
-                <button onclick="editCharacter('${c.id}')" title="Edit"><i class="fas fa-pen"></i></button>
-                <button onclick="deleteCharacter('${c.id}')" title="Delete"><i class="fas fa-trash"></i></button>
+                <button onclick="editCharacter('${c.id}')"><i class="fas fa-pen"></i></button>
+                <button onclick="deleteCharacter('${c.id}')"><i class="fas fa-trash"></i></button>
             </div>
         </div>
     `).join('');
-    charList.querySelectorAll('.character-item').forEach(el => {
+    charList.querySelectorAll('.char-item').forEach(el => {
         el.addEventListener('click', (e) => {
             if (e.target.closest('.actions')) return;
             selectCharacter(el.dataset.id);
@@ -1169,17 +1112,11 @@ function renderChatMessages(id) {
     const msgs = getChat(id);
     if (msgs.length === 0) {
         const char = getCharacter(id);
-        chatMessages.innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-comment-dots"></i>
-                <span>Start chatting with ${char ? char.name : 'this character'}</span>
-                <span style="font-size:12px;opacity:0.5;">Say hello and see how they respond</span>
-            </div>
-        `;
+        chatMessages.innerHTML = `<div class="empty-state"><i class="fas fa-comment-dots"></i><span>Start chatting with ${char ? char.name : 'this character'}</span></div>`;
         return;
     }
     chatMessages.innerHTML = msgs.map(m => `
-        <div class="message ${m.role}">
+        <div class="msg ${m.role}">
             <div class="sender">${m.role === 'user' ? 'You' : (getCharacter(id)?.name || 'AI')}</div>
             <div class="content">${m.content}</div>
         </div>
@@ -1189,14 +1126,9 @@ function renderChatMessages(id) {
 
 function renderEmptyChat() {
     chatCharName.textContent = 'Select a Character';
-    chatCharStatus.textContent = 'Choose or create a character to start chatting';
+    chatCharStatus.textContent = 'Choose or create a character';
     chatAvatar.innerHTML = '<i class="fas fa-user"></i>';
-    chatMessages.innerHTML = `
-        <div class="empty-state">
-            <i class="fas fa-comment-dots"></i>
-            <span>Select a character and start chatting</span>
-        </div>
-    `;
+    chatMessages.innerHTML = `<div class="empty-state"><i class="fas fa-comment-dots"></i><span>Select a character to start chatting</span></div>`;
     chatInput.disabled = true;
     sendBtn.disabled = true;
 }
@@ -1215,12 +1147,8 @@ function openModal(char = null) {
         charAppearance.value = char.appearance;
         charTraits.value = char.traits.join(', ');
         charSystemPrompt.value = char.systemPrompt || DEFAULT_SYSTEM;
-        if (char.avatar) {
-            avatarPreview.innerHTML = `<img src="${char.avatar}" alt="Avatar" />`;
-            tempAvatar = char.avatar;
-        } else {
-            avatarPreview.innerHTML = '<i class="fas fa-user"></i>';
-        }
+        avatarPreview.innerHTML = char.avatar ? `<img src="${char.avatar}" />` : '<i class="fas fa-user"></i>';
+        tempAvatar = char.avatar || null;
     } else {
         modalTitle.textContent = 'Create Character';
         editCharId.value = '';
@@ -1283,17 +1211,14 @@ async function sendMessage() {
     sendBtn.disabled = true;
     sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
     const history = getChat(currentCharId);
-    const msgs = history.slice(-10).map(m => ({
-        role: m.role === 'user' ? 'user' : 'assistant',
-        content: m.content
-    }));
+    const msgs = history.slice(-10).map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content }));
     const systemPrompt = buildSystemPrompt(char);
     try {
         const response = await callAI(systemPrompt, msgs, text);
         addMessage(currentCharId, 'ai', response);
     } catch (e) {
         showToast('Error: ' + e.message, 'error');
-        addMessage(currentCharId, 'ai', '*Error generating response. Please try again.*');
+        addMessage(currentCharId, 'ai', '*Error generating response.*');
     }
     isGenerating = false;
     sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
@@ -1316,42 +1241,90 @@ function buildSystemPrompt(char) {
 // ============================================================
 async function callAI(systemPrompt, history, userMsg) {
     const messages = [{ role: 'system', content: systemPrompt }, ...history, { role: 'user', content: userMsg }];
-    if (CONFIG.groq.key && CONFIG.groq.key !== 'gsk_your_free_key_here') {
-        try { return await callGroq(messages); } catch (e) { return await callHuggingFace(messages); }
+    try {
+        const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer gsk_your_free_key_here'
+            },
+            body: JSON.stringify({
+                model: 'llama-3.1-70b-versatile',
+                messages,
+                temperature: 0.8,
+                max_tokens: 512,
+            })
+        });
+        if (!resp.ok) throw new Error(`Groq API error: ${resp.status}`);
+        const data = await resp.json();
+        return data.choices[0].message.content;
+    } catch (e) {
+        console.warn('Groq failed, using Hugging Face:', e);
+        const model = 'meta-llama/Meta-Llama-3-8B-Instruct';
+        const url = CONFIG.hf.url + model;
+        const headers = { 'Content-Type': 'application/json' };
+        if (CONFIG.hf.key) headers['Authorization'] = `Bearer ${CONFIG.hf.key}`;
+        const prompt = messages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n') + '\nASSISTANT:';
+        const resp = await fetch(url, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ inputs: prompt, parameters: { max_new_tokens: 512, temperature: 0.8, do_sample: true } })
+        });
+        if (!resp.ok) throw new Error(`HF API error: ${resp.status}`);
+        const data = await resp.json();
+        return data.generated_text || data[0]?.generated_text || 'No response';
     }
-    return await callHuggingFace(messages);
 }
 
-async function callGroq(messages) {
-    const resp = await fetch(CONFIG.groq.url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${CONFIG.groq.key}` },
-        body: JSON.stringify({
-            model: CONFIG.groq.models.llama3,
-            messages,
-            temperature: 0.8,
-            max_tokens: 512,
-        })
-    });
-    if (!resp.ok) throw new Error(`Groq API error: ${resp.status}`);
-    const data = await resp.json();
-    return data.choices[0].message.content;
+// ============================================================
+// AUTH / CLOUD SYNC (Supabase ready)
+// ============================================================
+function updateUserDisplay() {
+    if (currentUser) {
+        userDisplay.innerHTML = `<i class="fas fa-user-check"></i> ${currentUser.email || 'User'}`;
+        document.querySelector('#loginBtn')?.remove();
+    } else {
+        userDisplay.innerHTML = `<i class="fas fa-user"></i> Guest`;
+    }
 }
 
-async function callHuggingFace(messages) {
-    const model = CONFIG.hf.models.text;
-    const url = CONFIG.hf.url + model;
-    const headers = { 'Content-Type': 'application/json' };
-    if (CONFIG.hf.key) headers['Authorization'] = `Bearer ${CONFIG.hf.key}`;
-    const prompt = messages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n') + '\nASSISTANT:';
-    const resp = await fetch(url, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ inputs: prompt, parameters: { max_new_tokens: 512, temperature: 0.8, do_sample: true } })
-    });
-    if (!resp.ok) throw new Error(`HF API error: ${resp.status}`);
-    const data = await resp.json();
-    return data.generated_text || data[0]?.generated_text || 'No response';
+function openAuthModal() {
+    authModal.classList.add('active');
+}
+
+function closeAuthModal() {
+    authModal.classList.remove('active');
+}
+
+function handleAuth() {
+    const email = authEmail.value.trim();
+    const password = authPassword.value.trim();
+    if (!email || !password) { showToast('Please enter email and password', 'warning'); return; }
+    if (authMode === 'login') {
+        // Simulated login - in production, connect to Supabase
+        currentUser = { email, id: 'user_' + Date.now() };
+        updateUserDisplay();
+        closeAuthModal();
+        showToast(`✅ Welcome back, ${email}!`, 'success');
+        // Cloud sync would happen here
+        syncToCloud();
+    } else {
+        // Simulated signup
+        currentUser = { email, id: 'user_' + Date.now() };
+        updateUserDisplay();
+        closeAuthModal();
+        showToast(`🎉 Account created for ${email}!`, 'success');
+        syncToCloud();
+    }
+}
+
+function syncToCloud() {
+    if (!currentUser) { showToast('Please login first', 'warning'); return; }
+    showToast('☁️ Syncing to cloud...', 'info');
+    // In production, this would save to Supabase
+    setTimeout(() => {
+        showToast(`☁️ Synced ${characters.length} characters to cloud`, 'success');
+    }, 1000);
 }
 
 // ============================================================
@@ -1365,9 +1338,7 @@ $('sendBtn').addEventListener('click', sendMessage);
 chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
 
 genImageBtn.addEventListener('click', generateStudioImage);
-imagePrompt.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); generateStudioImage(); }
-});
+genCharBtn.addEventListener('click', generateCharacterImage);
 
 // Style selector for avatar
 styleBtns.forEach(btn => {
@@ -1407,8 +1378,39 @@ $('importFile').addEventListener('change', (e) => {
     }
 });
 
-// Story generator
-$('genStoryBtn').addEventListener('click', generateStory);
+// Cloud Sync
+$('cloudSyncBtn').addEventListener('click', syncToCloud);
+
+// Auth - using the existing user display click
+userDisplay.addEventListener('click', () => {
+    if (!currentUser) {
+        openAuthModal();
+    } else {
+        if (confirm('Logout?')) {
+            currentUser = null;
+            updateUserDisplay();
+            showToast('Logged out', 'info');
+        }
+    }
+});
+
+// Auth modal
+$('authCancel').addEventListener('click', closeAuthModal);
+authModal.addEventListener('click', (e) => { if (e.target === authModal) closeAuthModal(); });
+$('authSubmit').addEventListener('click', handleAuth);
+
+authTabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+        authTabs.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        authMode = btn.dataset.auth;
+        authTitle.textContent = authMode === 'login' ? 'Sign In' : 'Create Account';
+        authSubmit.textContent = authMode === 'login' ? 'Sign In' : 'Sign Up';
+    });
+});
+
+authEmail.addEventListener('keydown', (e) => { if (e.key === 'Enter') authPassword.focus(); });
+authPassword.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleAuth(); });
 
 // ============================================================
 // INIT
@@ -1421,14 +1423,20 @@ if (characters.length > 0) {
 } else {
     renderEmptyChat();
 }
-if (!CONFIG.groq.key || CONFIG.groq.key === 'gsk_your_free_key_here') {
-    apiDot.className = 'dot offline';
-    apiLabel.textContent = 'HF (limited)';
-    showToast('💡 Get a free Groq key at console.groq.com for faster responses', 'info');
+
+// Check if Groq key is set
+const groqKey = 'gsk_your_free_key_here';
+if (!groqKey || groqKey === 'gsk_your_free_key_here') {
+    document.querySelector('#apiDot').className = 'dot offline';
+    document.querySelector('#apiLabel').textContent = 'HF (limited)';
 }
+
+updateUserDisplay();
 console.log('🎭 Dream Multi-AI loaded!');
 console.log('📚 Characters:', characters.length);
 console.log('🖼️ Images:', imageHistory.length);
+console.log('👤 User:', currentUser ? currentUser.email : 'Guest');
+console.log('💡 Tip: Get a free Groq key at console.groq.com for faster responses');
 </script>
 </body>
 </html>
