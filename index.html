@@ -97,6 +97,34 @@
             color: var(--accent);
             border: 1px solid rgba(108, 99, 255, 0.2);
         }
+        .tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-input);
+            border-radius: var(--radius-sm);
+            padding: 4px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        .tab-btn:hover { color: var(--text-primary); }
+        .tab-btn.active {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
         .main-grid {
             display: grid;
             grid-template-columns: 340px 1fr;
@@ -214,6 +242,7 @@
         .message.ai { align-self: flex-start; background: var(--ai-msg-bg); border-bottom-left-radius: 4px; }
         .message .sender { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 2px; }
         .message .content { word-wrap: break-word; }
+        .message .content img { max-width: 100%; border-radius: 8px; margin-top: 4px; border: 1px solid var(--border-color); }
         .chat-input {
             padding: 12px 20px;
             border-top: 1px solid var(--border-color);
@@ -364,6 +393,93 @@
         .api-status .dot.offline { background: #ef4444; }
         .api-status .dot.loading { background: #f59e0b; animation: pulse 0.8s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            padding: 16px 0;
+        }
+        .image-grid .image-card {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        .image-grid .image-card:hover { border-color: var(--accent); }
+        .image-grid .image-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .image-grid .image-card .info {
+            padding: 8px 12px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        .image-studio {
+            padding: 16px;
+        }
+        .image-studio .prompt-area {
+            margin-bottom: 16px;
+        }
+        .image-studio .prompt-area textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            outline: none;
+            transition: var(--transition);
+        }
+        .image-studio .prompt-area textarea:focus { border-color: var(--accent); }
+        .image-studio .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .image-studio .controls label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .image-studio .controls select,
+        .image-studio .controls input[type="number"] {
+            padding: 6px 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+        .image-studio .controls select { min-width: 100px; }
+        .image-studio .controls input[type="number"] { width: 70px; }
+        .image-result {
+            margin-top: 16px;
+            text-align: center;
+        }
+        .image-result img {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+        }
+        .image-result .actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
         .traits {
             display: flex;
             flex-wrap: wrap;
@@ -378,16 +494,6 @@
             color: var(--accent);
             border: 1px solid rgba(108, 99, 255, 0.15);
         }
-        .generating-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 12px;
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-        .generating-indicator i { animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -397,7 +503,7 @@
             <div class="logo-icon"><i class="fas fa-mask"></i></div>
             <div>
                 <h1>Dream Multi-AI</h1>
-                <span>Character Generator &amp; Chat</span>
+                <span>Character Generator &amp; Image Studio</span>
             </div>
         </div>
         <div class="header-actions">
@@ -405,54 +511,119 @@
             <button class="btn btn-primary btn-sm" id="newCharBtn"><i class="fas fa-plus"></i> New Character</button>
         </div>
     </header>
-    <div class="main-grid">
-        <aside class="sidebar">
-            <div class="sidebar-title">
-                <span><i class="fas fa-users"></i> Your Characters</span>
-                <span id="charCount" style="font-size:12px;color:var(--text-muted);">0</span>
-            </div>
-            <div class="character-list" id="characterList">
-                <div class="empty-state" style="padding:20px;font-size:13px;">
-                    <i class="fas fa-plus-circle" style="font-size:32px;"></i>
-                    <span>Create your first character</span>
+
+    <div class="tabs" id="mainTabs">
+        <button class="tab-btn active" data-tab="chat"><i class="fas fa-comment"></i> Chat</button>
+        <button class="tab-btn" data-tab="image"><i class="fas fa-image"></i> Image Studio</button>
+    </div>
+
+    <div class="tab-content active" id="tab-chat">
+        <div class="main-grid">
+            <aside class="sidebar">
+                <div class="sidebar-title">
+                    <span><i class="fas fa-users"></i> Your Characters</span>
+                    <span id="charCount" style="font-size:12px;color:var(--text-muted);">0</span>
                 </div>
-            </div>
-            <div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap;">
-                <button class="btn btn-sm" id="exportAllBtn"><i class="fas fa-file-export"></i> Export All</button>
-                <button class="btn btn-sm" id="importBtn"><i class="fas fa-file-import"></i> Import</button>
-                <input type="file" id="importFile" accept=".json" style="display:none;" />
-            </div>
-        </aside>
-        <section class="chat-area">
+                <div class="character-list" id="characterList">
+                    <div class="empty-state" style="padding:20px;font-size:13px;">
+                        <i class="fas fa-plus-circle" style="font-size:32px;"></i>
+                        <span>Create your first character</span>
+                    </div>
+                </div>
+                <div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap;">
+                    <button class="btn btn-sm" id="exportAllBtn"><i class="fas fa-file-export"></i> Export All</button>
+                    <button class="btn btn-sm" id="importBtn"><i class="fas fa-file-import"></i> Import</button>
+                    <input type="file" id="importFile" accept=".json" style="display:none;" />
+                </div>
+            </aside>
+            <section class="chat-area">
+                <div class="chat-header">
+                    <div class="left">
+                        <div class="avatar" id="chatAvatar"><i class="fas fa-user"></i></div>
+                        <div>
+                            <div class="char-name" id="chatCharName">Select a Character</div>
+                            <div class="char-status" id="chatCharStatus">Choose or create a character to start chatting</div>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-sm" id="exportCharBtn" title="Export Character"><i class="fas fa-download"></i></button>
+                        <button class="btn btn-sm" id="genStoryBtn" title="Generate Backstory/Story"><i class="fas fa-book"></i></button>
+                        <div class="api-status">
+                            <span class="dot online" id="apiDot"></span>
+                            <span id="apiLabel">Groq</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="empty-state">
+                        <i class="fas fa-comment-dots"></i>
+                        <span>Select a character and start chatting</span>
+                        <span style="font-size:12px;opacity:0.5;">Messages will appear here</span>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="chatInput" placeholder="Type a message..." disabled />
+                    <button class="btn btn-primary" id="sendBtn" disabled><i class="fas fa-paper-plane"></i> Send</button>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="tab-content" id="tab-image">
+        <div class="chat-area" style="height:70vh;">
             <div class="chat-header">
                 <div class="left">
-                    <div class="avatar" id="chatAvatar"><i class="fas fa-user"></i></div>
+                    <div style="font-size:20px;">🎨</div>
                     <div>
-                        <div class="char-name" id="chatCharName">Select a Character</div>
-                        <div class="char-status" id="chatCharStatus">Choose or create a character to start chatting</div>
+                        <div class="char-name">Image Studio</div>
+                        <div class="char-status">Generate any image from text descriptions</div>
                     </div>
                 </div>
-                <div class="actions">
-                    <button class="btn btn-sm" id="exportCharBtn" title="Export Character"><i class="fas fa-download"></i></button>
-                    <button class="btn btn-sm" id="genStoryBtn" title="Generate Backstory/Story"><i class="fas fa-book"></i></button>
-                    <div class="api-status">
-                        <span class="dot online" id="apiDot"></span>
-                        <span id="apiLabel">Groq</span>
+                <div class="api-status">
+                    <span class="dot online" id="apiDot2"></span>
+                    <span id="apiLabel2">Stable Diffusion</span>
+                </div>
+            </div>
+            <div class="image-studio" style="flex:1;overflow-y:auto;">
+                <div class="prompt-area">
+                    <textarea id="imagePrompt" placeholder="Describe the image you want to create...&#10;Example: 'A majestic dragon flying over a medieval castle at sunset, dramatic lighting, fantasy art'">A cyberpunk city street at night with neon signs, rain, and flying cars, vibrant colors, futuristic</textarea>
+                </div>
+                <div class="controls">
+                    <label>
+                        Style:
+                        <select id="imageStyle">
+                            <option value="fantasy">Fantasy</option>
+                            <option value="anime" selected>Anime</option>
+                            <option value="realistic">Realistic</option>
+                            <option value="cyberpunk">Cyberpunk</option>
+                            <option value="painting">Oil Painting</option>
+                            <option value="sketch">Sketch</option>
+                        </select>
+                    </label>
+                    <label>
+                        Size:
+                        <select id="imageSize">
+                            <option value="512">512x512</option>
+                            <option value="768" selected>768x768</option>
+                            <option value="1024">1024x1024</option>
+                        </select>
+                    </label>
+                    <label>
+                        Steps:
+                        <input type="number" id="imageSteps" value="25" min="10" max="50" />
+                    </label>
+                    <button class="btn btn-primary" id="genImageBtn"><i class="fas fa-wand-magic-sparkles"></i> Generate</button>
+                </div>
+                <div id="imageResult" class="image-result">
+                    <div class="empty-state" style="padding:40px;">
+                        <i class="fas fa-image" style="font-size:48px;opacity:0.3;"></i>
+                        <span>Your generated image will appear here</span>
+                        <span style="font-size:12px;opacity:0.5;">Enter a description and click Generate</span>
                     </div>
                 </div>
+                <div id="imageHistory" class="image-grid"></div>
             </div>
-            <div class="chat-messages" id="chatMessages">
-                <div class="empty-state">
-                    <i class="fas fa-comment-dots"></i>
-                    <span>Select a character and start chatting</span>
-                    <span style="font-size:12px;opacity:0.5;">Messages will appear here</span>
-                </div>
-            </div>
-            <div class="chat-input">
-                <input type="text" id="chatInput" placeholder="Type a message..." disabled />
-                <button class="btn btn-primary" id="sendBtn" disabled><i class="fas fa-paper-plane"></i> Send</button>
-            </div>
-        </section>
+        </div>
     </div>
 </div>
 
@@ -521,6 +692,15 @@ const STYLE_PROMPTS = {
     cyberpunk: 'cyberpunk character portrait, neon lights, futuristic, sci-fi, dark atmosphere, digital art'
 };
 
+const IMAGE_STYLES = {
+    fantasy: 'fantasy art, epic, magical, detailed, digital painting',
+    anime: 'anime style, vibrant colors, expressive, manga art, detailed',
+    realistic: 'photorealistic, hyperdetailed, professional photography, 8k, high quality',
+    cyberpunk: 'cyberpunk, neon lights, futuristic city, sci-fi, dark atmosphere, digital art',
+    painting: 'oil painting, fine art, masterpiece, detailed brushstrokes, gallery quality',
+    sketch: 'pencil sketch, black and white, detailed line art, drawing'
+};
+
 // ============================================================
 // STATE
 // ============================================================
@@ -529,8 +709,10 @@ let currentCharId = null;
 let chatHistory = {};
 let isGenerating = false;
 let isGeneratingImage = false;
+let isGeneratingStudioImage = false;
 let tempAvatar = null;
 let selectedStyle = 'fantasy';
+let imageHistory = [];
 
 // ============================================================
 // DOM REFS
@@ -559,7 +741,17 @@ const toast = $('toast');
 const toastMsg = $('toastMsg');
 const apiDot = $('apiDot');
 const apiLabel = $('apiLabel');
+const apiDot2 = $('apiDot2');
+const apiLabel2 = $('apiLabel2');
 const styleBtns = document.querySelectorAll('.style-btn');
+const tabBtns = document.querySelectorAll('.tab-btn');
+const imagePrompt = $('imagePrompt');
+const imageStyle = $('imageStyle');
+const imageSize = $('imageSize');
+const imageSteps = $('imageSteps');
+const genImageBtn = $('genImageBtn');
+const imageResult = $('imageResult');
+const imageHistoryEl = $('imageHistory');
 let toastTimer = null;
 
 // ============================================================
@@ -573,12 +765,25 @@ function showToast(msg, type = 'info') {
 }
 
 // ============================================================
+// TABS
+// ============================================================
+tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        $(`tab-${btn.dataset.tab}`).classList.add('active');
+    });
+});
+
+// ============================================================
 // STORAGE
 // ============================================================
 function saveData() {
     try {
         localStorage.setItem('dream_characters', JSON.stringify(characters));
         localStorage.setItem('dream_chat_history', JSON.stringify(chatHistory));
+        localStorage.setItem('dream_image_history', JSON.stringify(imageHistory));
     } catch (e) {}
 }
 function loadData() {
@@ -587,6 +792,8 @@ function loadData() {
         if (c) characters = JSON.parse(c);
         const h = localStorage.getItem('dream_chat_history');
         if (h) chatHistory = JSON.parse(h);
+        const i = localStorage.getItem('dream_image_history');
+        if (i) imageHistory = JSON.parse(i);
     } catch (e) {}
 }
 
@@ -682,7 +889,8 @@ function exportAllCharacters() {
         version: '1.0',
         exported: new Date().toISOString(),
         characters: characters,
-        chatHistory: chatHistory
+        chatHistory: chatHistory,
+        imageHistory: imageHistory
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -702,7 +910,6 @@ function importCharacters(file) {
         try {
             const data = JSON.parse(e.target.result);
             if (data.characters && Array.isArray(data.characters)) {
-                // Merge import
                 const existingIds = new Set(characters.map(c => c.id));
                 let imported = 0;
                 for (const char of data.characters) {
@@ -711,6 +918,9 @@ function importCharacters(file) {
                         chatHistory[char.id] = data.chatHistory?.[char.id] || [];
                         imported++;
                     }
+                }
+                if (data.imageHistory) {
+                    imageHistory = [...imageHistory, ...data.imageHistory];
                 }
                 saveData();
                 renderCharacters();
@@ -778,7 +988,7 @@ async function generateAvatar(prompt) {
     genAvatarBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
     avatarPreview.innerHTML = '<i class="fas fa-circle-notch fa-spin" style="font-size:24px;color:var(--accent);"></i>';
     try {
-        const imgUrl = await callImageAPI(prompt);
+        const imgUrl = await callImageAPI(prompt, 512);
         tempAvatar = imgUrl;
         avatarPreview.innerHTML = `<img src="${imgUrl}" alt="Generated avatar" />`;
         showToast('✨ Portrait generated!', 'success');
@@ -791,7 +1001,91 @@ async function generateAvatar(prompt) {
     genAvatarBtn.disabled = false;
 }
 
-async function callImageAPI(prompt) {
+// ============================================================
+// IMAGE STUDIO
+// ============================================================
+async function generateStudioImage() {
+    if (isGeneratingStudioImage) return;
+    const prompt = imagePrompt.value.trim();
+    if (!prompt) { showToast('Please enter a description', 'warning'); return; }
+    isGeneratingStudioImage = true;
+    genImageBtn.disabled = true;
+    genImageBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+    const size = parseInt(imageSize.value);
+    const steps = parseInt(imageSteps.value);
+    const style = imageStyle.value;
+    const stylePrompt = IMAGE_STYLES[style] || '';
+    const fullPrompt = `${prompt}, ${stylePrompt}, high quality, detailed, masterpiece`;
+    imageResult.innerHTML = `
+        <div class="empty-state" style="padding:40px;">
+            <i class="fas fa-circle-notch fa-spin" style="font-size:32px;color:var(--accent);"></i>
+            <span>Generating your image...</span>
+            <span style="font-size:12px;opacity:0.5;">This may take 10-30 seconds</span>
+        </div>
+    `;
+    try {
+        const imgUrl = await callImageAPI(fullPrompt, size);
+        imageResult.innerHTML = `
+            <div>
+                <img src="${imgUrl}" alt="Generated image" />
+                <div class="actions">
+                    <button class="btn btn-success btn-sm" onclick="downloadImage('${imgUrl}')"><i class="fas fa-download"></i> Download</button>
+                    <button class="btn btn-sm" onclick="copyImageToChat('${imgUrl}')"><i class="fas fa-comment"></i> Use in Chat</button>
+                </div>
+            </div>
+        `;
+        imageHistory.push({ prompt, url: imgUrl, time: Date.now() });
+        saveData();
+        renderImageHistory();
+        showToast('🖼️ Image generated!', 'success');
+    } catch (e) {
+        imageResult.innerHTML = `
+            <div class="empty-state" style="padding:40px;color:#ef4444;">
+                <i class="fas fa-exclamation-triangle" style="font-size:32px;"></i>
+                <span>Error generating image</span>
+                <span style="font-size:12px;opacity:0.7;">${e.message}</span>
+            </div>
+        `;
+        showToast('Error: ' + e.message, 'error');
+    }
+    isGeneratingStudioImage = false;
+    genImageBtn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Generate';
+    genImageBtn.disabled = false;
+}
+
+window.downloadImage = function(url) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dream-image-${Date.now()}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToast('📥 Image downloaded!', 'success');
+};
+
+window.copyImageToChat = function(url) {
+    if (!currentCharId) { showToast('Select a character first', 'warning'); return; }
+    addMessage(currentCharId, 'user', `[Generated Image]\n\n![image](${url})`);
+    showToast('🖼️ Image added to chat!', 'success');
+};
+
+function renderImageHistory() {
+    if (imageHistory.length === 0) {
+        imageHistoryEl.innerHTML = '';
+        return;
+    }
+    imageHistoryEl.innerHTML = imageHistory.slice().reverse().map(img => `
+        <div class="image-card">
+            <img src="${img.url}" alt="Generated image" />
+            <div class="info">${img.prompt.slice(0, 60)}${img.prompt.length > 60 ? '...' : ''}</div>
+        </div>
+    `).join('');
+}
+
+// ============================================================
+// IMAGE API
+// ============================================================
+async function callImageAPI(prompt, size = 512) {
     const model = CONFIG.hf.models.image;
     const url = CONFIG.hf.url + model;
     const headers = { 'Content-Type': 'application/json' };
@@ -802,11 +1096,11 @@ async function callImageAPI(prompt) {
         body: JSON.stringify({
             inputs: prompt,
             parameters: {
-                negative_prompt: 'blurry, bad quality, distorted, ugly, deformed, extra limbs',
-                num_inference_steps: 25,
+                negative_prompt: 'blurry, bad quality, distorted, ugly, deformed, extra limbs, nsfw',
+                num_inference_steps: Math.min(Math.max(parseInt(imageSteps.value) || 25, 10), 50),
                 guidance_scale: 7.5,
-                width: 512,
-                height: 512
+                width: size,
+                height: size
             }
         })
     });
@@ -1070,7 +1364,12 @@ modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); }
 $('sendBtn').addEventListener('click', sendMessage);
 chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
 
-// Style selector
+genImageBtn.addEventListener('click', generateStudioImage);
+imagePrompt.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); generateStudioImage(); }
+});
+
+// Style selector for avatar
 styleBtns.forEach(btn => {
     btn.addEventListener('click', () => {
         styleBtns.forEach(b => b.classList.remove('active'));
@@ -1116,6 +1415,7 @@ $('genStoryBtn').addEventListener('click', generateStory);
 // ============================================================
 loadData();
 renderCharacters();
+renderImageHistory();
 if (characters.length > 0) {
     selectCharacter(characters[0].id);
 } else {
@@ -1126,8 +1426,9 @@ if (!CONFIG.groq.key || CONFIG.groq.key === 'gsk_your_free_key_here') {
     apiLabel.textContent = 'HF (limited)';
     showToast('💡 Get a free Groq key at console.groq.com for faster responses', 'info');
 }
-console.log('🎭 Dream Multi-AI Character Generator loaded!');
+console.log('🎭 Dream Multi-AI loaded!');
 console.log('📚 Characters:', characters.length);
+console.log('🖼️ Images:', imageHistory.length);
 </script>
 </body>
 </html>
