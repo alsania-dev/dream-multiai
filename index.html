@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dream Multi-AI Generator</title>
+    <title>Dream Multi-AI - Character Generator & Chat</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <style>
         :root {
@@ -11,15 +11,20 @@
             --bg-secondary: #1a1a2e;
             --bg-card: #16213e;
             --bg-input: #0f0f1a;
+            --bg-hover: #1e2a4a;
             --text-primary: #e0e0e0;
             --text-secondary: #a0a0b8;
+            --text-muted: #6b6b8a;
             --accent: #6c63ff;
             --accent-hover: #7b72ff;
             --accent-glow: rgba(108, 99, 255, 0.3);
             --border-color: #2a2a4a;
             --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
             --radius: 16px;
+            --radius-sm: 10px;
             --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --user-msg-bg: #2a2a4a;
+            --ai-msg-bg: #16213e;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -27,269 +32,223 @@
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
+            padding: 16px;
         }
-        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-secondary); }
-        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
-        .container {
-            max-width: 900px;
-            width: 100%;
-            background: var(--bg-secondary);
-            border-radius: var(--radius);
-            padding: 30px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-        }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+        .app { max-width: 1100px; margin: 0 auto; }
         .header {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            margin-bottom: 28px;
+            align-items: center;
+            padding: 16px 24px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
             flex-wrap: wrap;
             gap: 12px;
         }
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .logo { display: flex; align-items: center; gap: 12px; }
         .logo-icon {
-            font-size: 32px;
+            font-size: 28px;
             color: var(--accent);
             background: rgba(108, 99, 255, 0.15);
-            padding: 10px;
-            border-radius: 12px;
+            padding: 8px 12px;
+            border-radius: 10px;
         }
         .logo h1 {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
             background: linear-gradient(135deg, #6c63ff, #a855f7);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .logo span {
-            font-size: 14px;
+        .logo span { font-size: 13px; color: var(--text-secondary); display: block; -webkit-text-fill-color: var(--text-secondary); }
+        .header-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .btn {
+            padding: 8px 18px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: var(--bg-input);
             color: var(--text-secondary);
-            -webkit-text-fill-color: var(--text-secondary);
-        }
-        .badge {
-            display: flex;
-            gap: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: var(--transition);
+            display: inline-flex;
             align-items: center;
+            gap: 6px;
+        }
+        .btn:hover { border-color: var(--accent); color: var(--text-primary); background: var(--bg-hover); }
+        .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+        .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #fff; }
+        .btn-danger { border-color: #ef4444; color: #ef4444; }
+        .btn-danger:hover { background: #ef4444; color: #fff; }
+        .btn-success { border-color: #22c55e; color: #22c55e; }
+        .btn-success:hover { background: #22c55e; color: #fff; }
+        .btn-sm { padding: 4px 12px; font-size: 12px; }
+        .badge {
             background: rgba(108, 99, 255, 0.12);
-            padding: 6px 14px;
+            padding: 4px 12px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             color: var(--accent);
             border: 1px solid rgba(108, 99, 255, 0.2);
         }
-        .badge i { font-size: 14px; }
-        .model-selector {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
+        .main-grid {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 20px;
         }
-        .model-btn {
-            padding: 8px 18px;
-            background: var(--bg-input);
+        @media (max-width: 768px) { .main-grid { grid-template-columns: 1fr; } }
+        .sidebar {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
             border: 1px solid var(--border-color);
-            border-radius: 10px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 13px;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .model-btn:hover {
-            border-color: var(--accent);
-            color: var(--text-primary);
-        }
-        .model-btn.active {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #fff;
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
-        .model-btn .model-status { font-size: 10px; opacity: 0.7; }
-        .input-area { margin-bottom: 20px; }
-        .input-area textarea {
-            width: 100%;
-            min-height: 120px;
             padding: 16px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            color: var(--text-primary);
-            font-size: 15px;
-            resize: vertical;
-            font-family: inherit;
-            transition: var(--transition);
-            line-height: 1.6;
+            max-height: 70vh;
+            overflow-y: auto;
         }
-        .input-area textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 30px var(--accent-glow);
-        }
-        .input-area textarea::placeholder {
-            color: var(--text-secondary);
-            opacity: 0.6;
-        }
-        .controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .controls .settings-group {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            flex-wrap: wrap;
-            flex: 1;
-        }
-        .controls label {
-            font-size: 13px;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .controls input[type="number"],
-        .controls select {
-            padding: 6px 12px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 13px;
-            width: 70px;
-        }
-        .controls select { width: auto; min-width: 100px; }
-        .controls input[type="range"] {
-            width: 100px;
-            accent-color: var(--accent);
-            background: transparent;
-        }
-        .generate-btn {
-            padding: 12px 32px;
-            background: linear-gradient(135deg, #6c63ff, #a855f7);
-            color: #fff;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
+        .sidebar-title {
+            font-size: 14px;
             font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .character-list { display: flex; flex-direction: column; gap: 6px; }
+        .character-item {
+            padding: 10px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
             cursor: pointer;
             transition: var(--transition);
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 10px;
-            box-shadow: 0 4px 20px rgba(108, 99, 255, 0.3);
-            margin-left: auto;
         }
-        .generate-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(108, 99, 255, 0.4);
-        }
-        .generate-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .generate-btn .spinner { display: none; animation: spin 1s linear infinite; }
-        .generate-btn.loading .spinner { display: inline-block; }
-        .generate-btn.loading .btn-text { display: none; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .output-area {
-            background: var(--bg-input);
-            border-radius: 12px;
+        .character-item:hover { border-color: var(--accent); background: var(--bg-hover); }
+        .character-item.active { border-color: var(--accent); background: rgba(108, 99, 255, 0.1); }
+        .character-item .name { font-size: 14px; font-weight: 500; }
+        .character-item .sub { font-size: 11px; color: var(--text-muted); }
+        .character-item .actions { display: flex; gap: 4px; }
+        .character-item .actions button { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 2px 6px; }
+        .character-item .actions button:hover { color: var(--text-primary); }
+        .chat-area {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
             border: 1px solid var(--border-color);
-            min-height: 200px;
-            padding: 20px;
-            margin-bottom: 20px;
-            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 70vh;
+        }
+        .chat-header {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-header .char-name { font-size: 18px; font-weight: 600; }
+        .chat-header .char-status { font-size: 12px; color: var(--text-muted); }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .message {
+            max-width: 85%;
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            line-height: 1.6;
+            font-size: 14px;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .message.user { align-self: flex-end; background: var(--user-msg-bg); border-bottom-right-radius: 4px; }
+        .message.ai { align-self: flex-start; background: var(--ai-msg-bg); border-bottom-left-radius: 4px; }
+        .message .sender { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 2px; }
+        .message .content { word-wrap: break-word; }
+        .message .content .typing { display: inline-block; animation: dots 1.2s steps(4, end) infinite; }
+        @keyframes dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
+        .chat-input {
+            padding: 12px 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 10px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
             transition: var(--transition);
         }
-        .output-area:has(.output-content:not(:empty)) { border-color: var(--accent); }
-        .output-content {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            line-height: 1.8;
-            font-size: 15px;
-            color: var(--text-primary);
-        }
-        .output-content .placeholder {
-            color: var(--text-secondary);
-            opacity: 0.5;
-            font-style: italic;
+        .chat-input input:focus { border-color: var(--accent); }
+        .chat-input input::placeholder { color: var(--text-muted); }
+        .chat-input button { padding: 10px 20px; }
+        .empty-state {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 160px;
-            gap: 12px;
+            height: 100%;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 40px;
         }
-        .output-content .placeholder i { font-size: 48px; opacity: 0.3; }
-        .output-content img {
-            max-width: 100%;
-            border-radius: 8px;
-            margin-top: 8px;
+        .empty-state i { font-size: 48px; opacity: 0.3; margin-bottom: 16px; }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--bg-secondary);
             border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 28px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow);
         }
-        .output-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .output-actions button {
-            padding: 6px 14px;
+        .modal h2 { font-size: 20px; margin-bottom: 16px; }
+        .modal label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+        .modal input, .modal textarea, .modal select {
+            width: 100%;
+            padding: 10px 14px;
             background: var(--bg-input);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 12px;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .output-actions button:hover {
-            border-color: var(--accent);
+            border-radius: var(--radius-sm);
             color: var(--text-primary);
-        }
-        .footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border-color);
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-        .footer .links {
-            display: flex;
-            gap: 16px;
-        }
-        .footer .links a {
-            color: var(--text-secondary);
-            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-family: inherit;
+            outline: none;
             transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 4px;
         }
-        .footer .links a:hover { color: var(--accent); }
+        .modal input:focus, .modal textarea:focus { border-color: var(--accent); }
+        .modal textarea { min-height: 80px; resize: vertical; }
+        .modal .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
         .toast {
             position: fixed;
             bottom: 30px;
@@ -297,393 +256,541 @@
             transform: translateX(-50%) translateY(100px);
             background: var(--bg-card);
             color: var(--text-primary);
-            padding: 14px 28px;
-            border-radius: 12px;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
             border: 1px solid var(--border-color);
             box-shadow: var(--shadow);
             font-size: 14px;
             opacity: 0;
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 999;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            z-index: 2000;
         }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
         .toast.error { border-color: #ef4444; }
         .toast.success { border-color: #22c55e; }
-        @media (max-width: 640px) {
-            .container { padding: 16px; }
-            .header { flex-direction: column; align-items: flex-start; }
-            .controls { flex-direction: column; align-items: stretch; }
-            .generate-btn { margin-left: 0; justify-content: center; }
-            .model-selector { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
-            .footer { flex-direction: column; text-align: center; }
-            .controls .settings-group { flex-wrap: wrap; }
+        .char-preview {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin: 8px 0;
         }
+        .char-preview .label { color: var(--text-muted); }
+        .traits {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin: 4px 0;
+        }
+        .trait-tag {
+            background: rgba(108, 99, 255, 0.12);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            color: var(--accent);
+            border: 1px solid rgba(108, 99, 255, 0.15);
+        }
+        .api-status {
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .api-status .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .api-status .dot.online { background: #22c55e; }
+        .api-status .dot.offline { background: #ef4444; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <div class="logo">
-                <div class="logo-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
+<div class="app">
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon"><i class="fas fa-mask"></i></div>
+            <div>
+                <h1>Dream Multi-AI</h1>
+                <span>Character Generator &amp; Chat</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <span class="badge"><i class="fas fa-bolt"></i> Groq + HF</span>
+            <button class="btn btn-primary btn-sm" id="newCharBtn"><i class="fas fa-plus"></i> New Character</button>
+        </div>
+    </header>
+    <div class="main-grid">
+        <aside class="sidebar">
+            <div class="sidebar-title">
+                <span><i class="fas fa-users"></i> Your Characters</span>
+                <span id="charCount" style="font-size:12px;color:var(--text-muted);">0</span>
+            </div>
+            <div class="character-list" id="characterList">
+                <div class="empty-state" style="padding:20px;font-size:13px;">
+                    <i class="fas fa-plus-circle" style="font-size:32px;"></i>
+                    <span>Create your first character</span>
+                </div>
+            </div>
+        </aside>
+        <section class="chat-area">
+            <div class="chat-header">
                 <div>
-                    <h1>Dream Multi-AI</h1>
-                    <span>Free • No API Key Required</span>
+                    <div class="char-name" id="chatCharName">Select a Character</div>
+                    <div class="char-status" id="chatCharStatus">Choose or create a character to start chatting</div>
+                </div>
+                <div class="api-status">
+                    <span class="dot online" id="apiDot"></span>
+                    <span id="apiLabel">Groq</span>
+                    <button class="btn btn-sm" id="refreshApiBtn" style="padding:2px 8px;font-size:10px;"><i class="fas fa-sync"></i></button>
                 </div>
             </div>
-            <div class="badge">
-                <i class="fas fa-bolt"></i>
-                <span>Powered by Groq &amp; Hugging Face</span>
-            </div>
-        </header>
-
-        <div class="model-selector" id="modelSelector">
-            <button class="model-btn active" data-model="llama3">
-                <i class="fas fa-brain"></i> Llama 3 <span class="model-status">(fast)</span>
-            </button>
-            <button class="model-btn" data-model="mixtral">
-                <i class="fas fa-robot"></i> Mixtral <span class="model-status">(creative)</span>
-            </button>
-            <button class="model-btn" data-model="gemma">
-                <i class="fas fa-gem"></i> Gemma <span class="model-status">(balanced)</span>
-            </button>
-            <button class="model-btn" data-model="sd-image">
-                <i class="fas fa-image"></i> Stable Diffusion <span class="model-status">(image)</span>
-            </button>
-        </div>
-
-        <div class="input-area">
-            <textarea id="promptInput" placeholder="Describe what you want to create...&#10;Example: 'A futuristic city with neon lights and flying cars, cyberpunk style'">A serene landscape with mountains, a lake reflecting the sunset, and a cabin with smoke rising from the chimney</textarea>
-        </div>
-
-        <div class="controls">
-            <div class="settings-group">
-                <label>
-                    <i class="fas fa-thermometer-half"></i> Temperature
-                    <input type="range" id="temperature" min="0" max="2" step="0.1" value="0.8" />
-                    <span id="tempDisplay">0.8</span>
-                </label>
-                <label>
-                    <i class="fas fa-list-ol"></i> Max Tokens
-                    <input type="number" id="maxTokens" value="512" min="64" max="2048" step="64" />
-                </label>
-            </div>
-            <button class="generate-btn" id="generateBtn">
-                <span class="btn-text"><i class="fas fa-play"></i> Generate</span>
-                <span class="spinner"><i class="fas fa-circle-notch"></i></span>
-            </button>
-        </div>
-
-        <div class="output-area">
-            <div class="output-content" id="outputContent">
-                <div class="placeholder">
-                    <i class="fas fa-robot"></i>
-                    <span>Your creation will appear here...</span>
-                    <span style="font-size:12px;opacity:0.5;">Choose a model, enter a prompt, and click Generate</span>
+            <div class="chat-messages" id="chatMessages">
+                <div class="empty-state">
+                    <i class="fas fa-comment-dots"></i>
+                    <span>Select a character and start chatting</span>
+                    <span style="font-size:12px;opacity:0.5;">Messages will appear here</span>
                 </div>
             </div>
-        </div>
-
-        <div class="output-actions">
-            <button id="copyBtn"><i class="fas fa-copy"></i> Copy</button>
-            <button id="downloadBtn"><i class="fas fa-download"></i> Download</button>
-            <button id="clearBtn"><i class="fas fa-trash"></i> Clear</button>
-        </div>
-
-        <footer class="footer">
-            <span>© 2026 Dream Multi-AI &mdash; Free &amp; Open</span>
-            <div class="links">
-                <a href="#" id="donateLink"><i class="fas fa-heart" style="color:#ef4444;"></i> Support</a>
-                <a href="https://github.com/alsania-dev/dream-multiai" target="_blank"><i class="fab fa-github"></i> GitHub</a>
-                <a href="#" id="feedbackLink"><i class="fas fa-comment"></i> Feedback</a>
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="Type a message..." disabled />
+                <button class="btn btn-primary" id="sendBtn" disabled><i class="fas fa-paper-plane"></i> Send</button>
             </div>
-        </footer>
+        </section>
     </div>
+</div>
 
-    <div class="toast" id="toast">
-        <span id="toastIcon"><i class="fas fa-info-circle"></i></span>
-        <span id="toastMessage">Ready</span>
+<div class="modal-overlay" id="charModal">
+    <div class="modal">
+        <h2 id="modalTitle">Create Character</h2>
+        <input type="hidden" id="editCharId" />
+        <label>Character Name *</label>
+        <input type="text" id="charName" placeholder="e.g. Captain Zara" />
+        <label>Personality</label>
+        <textarea id="charPersonality" placeholder="e.g. Brave, witty, fiercely loyal to her crew..."></textarea>
+        <label>Backstory</label>
+        <textarea id="charBackstory" placeholder="e.g. A former space marine who now captains a freelancer ship..."></textarea>
+        <label>Appearance</label>
+        <textarea id="charAppearance" placeholder="e.g. Tall, silver hair, cybernetic eye, scar on left cheek..."></textarea>
+        <label>Traits (comma separated)</label>
+        <input type="text" id="charTraits" placeholder="e.g. Brave, Loyal, Cunning" />
+        <label>System Prompt (advanced)</label>
+        <textarea id="charSystemPrompt" placeholder="Custom instructions for the AI..."></textarea>
+        <div class="actions">
+            <button class="btn" id="modalCancel">Cancel</button>
+            <button class="btn btn-primary" id="modalSave">Save Character</button>
+        </div>
     </div>
+</div>
 
-    <script>
-        const CONFIG = {
-            groq: {
-                url: 'https://api.groq.com/openai/v1/chat/completions',
-                key: 'gsk_your_free_key_here',
-                models: {
-                    llama3: 'llama-3.1-70b-versatile',
-                    mixtral: 'mixtral-8x7b-32768',
-                    gemma: 'gemma2-9b-it'
-                }
-            },
-            huggingface: {
-                url: 'https://api-inference.huggingface.co/models/',
-                key: '',
-                models: {
-                    'sd-image': 'stabilityai/stable-diffusion-3.5-large',
-                    'llama3': 'meta-llama/Meta-Llama-3-8B-Instruct',
-                    'mixtral': 'mistralai/Mixtral-8x7B-Instruct-v0.1'
-                }
-            }
-        };
+<div class="toast" id="toast"><span id="toastMsg"></span></div>
 
-        const state = { selectedModel: 'llama3', isGenerating: false, outputText: '', isImageMode: false };
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const CONFIG = {
+    groq: {
+        url: 'https://api.groq.com/openai/v1/chat/completions',
+        key: 'gsk_your_free_key_here',
+        models: { llama3: 'llama-3.1-70b-versatile', mixtral: 'mixtral-8x7b-32768', gemma: 'gemma2-9b-it' }
+    },
+    hf: {
+        url: 'https://api-inference.huggingface.co/models/',
+        key: '',
+        models: { llama3: 'meta-llama/Meta-Llama-3-8B-Instruct' }
+    }
+};
+const DEFAULT_SYSTEM = `You are a character in a story. Respond in character, staying true to your personality, backstory, and appearance. Keep responses natural and conversational. Never break character.`;
 
-        const $ = (sel) => document.querySelector(sel);
-        const $$ = (sel) => document.querySelectorAll(sel);
+// ============================================================
+// STATE
+// ============================================================
+let characters = [];
+let currentCharId = null;
+let chatHistory = {};
+let isGenerating = false;
+let selectedModel = 'llama3';
 
-        const promptInput = $('#promptInput');
-        const generateBtn = $('#generateBtn');
-        const outputContent = $('#outputContent');
-        const temperature = $('#temperature');
-        const tempDisplay = $('#tempDisplay');
-        const maxTokens = $('#maxTokens');
-        const modelBtns = $$('.model-btn');
-        const toast = $('#toast');
-        const toastMessage = $('#toastMessage');
-        const toastIcon = $('#toastIcon');
+// ============================================================
+// DOM REFS
+// ============================================================
+const $ = id => document.getElementById(id);
+const charList = $('characterList');
+const chatMessages = $('chatMessages');
+const chatInput = $('chatInput');
+const sendBtn = $('sendBtn');
+const chatCharName = $('chatCharName');
+const chatCharStatus = $('chatCharStatus');
+const charCount = $('charCount');
+const modal = $('charModal');
+const modalTitle = $('modalTitle');
+const editCharId = $('editCharId');
+const charName = $('charName');
+const charPersonality = $('charPersonality');
+const charBackstory = $('charBackstory');
+const charAppearance = $('charAppearance');
+const charTraits = $('charTraits');
+const charSystemPrompt = $('charSystemPrompt');
+const toast = $('toast');
+const toastMsg = $('toastMsg');
+const apiDot = $('apiDot');
+const apiLabel = $('apiLabel');
+let toastTimer = null;
 
-        let toastTimeout = null;
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg, type = 'info') {
+    toastMsg.textContent = msg;
+    toast.className = 'toast show ' + type;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
+}
 
-        function showToast(message, type = 'info') {
-            const iconMap = { info: 'fa-info-circle', success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-triangle-exclamation' };
-            toastIcon.innerHTML = `<i class="fas ${iconMap[type] || iconMap.info}"></i>`;
-            toastMessage.textContent = message;
-            toast.className = 'toast show ' + type;
-            clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, 4000);
+// ============================================================
+// STORAGE
+// ============================================================
+function saveData() {
+    try {
+        localStorage.setItem('dream_characters', JSON.stringify(characters));
+        localStorage.setItem('dream_chat_history', JSON.stringify(chatHistory));
+    } catch (e) {}
+}
+function loadData() {
+    try {
+        const c = localStorage.getItem('dream_characters');
+        if (c) characters = JSON.parse(c);
+        const h = localStorage.getItem('dream_chat_history');
+        if (h) chatHistory = JSON.parse(h);
+    } catch (e) {}
+}
+
+// ============================================================
+// CHARACTER CRUD
+// ============================================================
+function createCharacter(data) {
+    const id = Date.now().toString(36) + Math.random().toString(36).substr(2, 4);
+    const char = {
+        id,
+        name: data.name.trim(),
+        personality: data.personality.trim(),
+        backstory: data.backstory.trim(),
+        appearance: data.appearance.trim(),
+        traits: data.traits ? data.traits.split(',').map(s => s.trim()).filter(Boolean) : [],
+        systemPrompt: data.systemPrompt.trim() || DEFAULT_SYSTEM,
+        created: Date.now()
+    };
+    characters.push(char);
+    chatHistory[id] = [];
+    saveData();
+    renderCharacters();
+    selectCharacter(id);
+    showToast(`✨ Character "${char.name}" created!`, 'success');
+    return char;
+}
+
+function updateCharacter(id, data) {
+    const idx = characters.findIndex(c => c.id === id);
+    if (idx === -1) return;
+    const char = characters[idx];
+    Object.assign(char, {
+        name: data.name.trim(),
+        personality: data.personality.trim(),
+        backstory: data.backstory.trim(),
+        appearance: data.appearance.trim(),
+        traits: data.traits ? data.traits.split(',').map(s => s.trim()).filter(Boolean) : [],
+        systemPrompt: data.systemPrompt.trim() || DEFAULT_SYSTEM,
+    });
+    saveData();
+    renderCharacters();
+    if (currentCharId === id) renderChatHeader(char);
+    showToast(`✅ Character "${char.name}" updated`, 'success');
+}
+
+function deleteCharacter(id) {
+    if (!confirm('Delete this character?')) return;
+    const char = characters.find(c => c.id === id);
+    characters = characters.filter(c => c.id !== id);
+    delete chatHistory[id];
+    saveData();
+    renderCharacters();
+    if (currentCharId === id) {
+        currentCharId = characters.length > 0 ? characters[0].id : null;
+        if (currentCharId) selectCharacter(currentCharId);
+        else renderEmptyChat();
+    }
+    showToast(`🗑️ Deleted "${char.name}"`, 'info');
+}
+
+function getCharacter(id) { return characters.find(c => c.id === id); }
+function getChat(id) { return chatHistory[id] || []; }
+
+// ============================================================
+// RENDER
+// ============================================================
+function renderCharacters() {
+    if (characters.length === 0) {
+        charList.innerHTML = `<div class="empty-state" style="padding:20px;font-size:13px;">
+            <i class="fas fa-plus-circle" style="font-size:32px;"></i>
+            <span>Create your first character</span>
+        </div>`;
+        charCount.textContent = '0';
+        return;
+    }
+    charCount.textContent = characters.length;
+    charList.innerHTML = characters.map(c => `
+        <div class="character-item ${currentCharId === c.id ? 'active' : ''}" data-id="${c.id}">
+            <div>
+                <div class="name">${c.name}</div>
+                <div class="sub">${c.traits.slice(0, 2).join(', ') || 'No traits'}</div>
+            </div>
+            <div class="actions">
+                <button onclick="editCharacter('${c.id}')" title="Edit"><i class="fas fa-pen"></i></button>
+                <button onclick="deleteCharacter('${c.id}')" title="Delete"><i class="fas fa-trash"></i></button>
+            </div>
+        </div>
+    `).join('');
+    charList.querySelectorAll('.character-item').forEach(el => {
+        el.addEventListener('click', (e) => {
+            if (e.target.closest('.actions')) return;
+            selectCharacter(el.dataset.id);
+        });
+    });
+}
+
+function selectCharacter(id) {
+    currentCharId = id;
+    const char = getCharacter(id);
+    if (!char) return;
+    renderCharacters();
+    renderChatHeader(char);
+    renderChatMessages(id);
+    chatInput.disabled = false;
+    sendBtn.disabled = false;
+    chatInput.focus();
+}
+
+function renderChatHeader(char) {
+    chatCharName.textContent = char.name;
+    const traitStr = char.traits.length ? `🧩 ${char.traits.join(' · ')}` : '';
+    chatCharStatus.textContent = traitStr || `${char.personality.slice(0, 60)}${char.personality.length > 60 ? '...' : ''}`;
+}
+
+function renderChatMessages(id) {
+    const msgs = getChat(id);
+    if (msgs.length === 0) {
+        const char = getCharacter(id);
+        chatMessages.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-comment-dots"></i>
+                <span>Start chatting with ${char ? char.name : 'this character'}</span>
+                <span style="font-size:12px;opacity:0.5;">Say hello and see how they respond</span>
+            </div>
+        `;
+        return;
+    }
+    chatMessages.innerHTML = msgs.map(m => `
+        <div class="message ${m.role}">
+            <div class="sender">${m.role === 'user' ? 'You' : (getCharacter(id)?.name || 'AI')}</div>
+            <div class="content">${m.content}</div>
+        </div>
+    `).join('');
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function renderEmptyChat() {
+    chatCharName.textContent = 'Select a Character';
+    chatCharStatus.textContent = 'Choose or create a character to start chatting';
+    chatMessages.innerHTML = `
+        <div class="empty-state">
+            <i class="fas fa-comment-dots"></i>
+            <span>Select a character and start chatting</span>
+        </div>
+    `;
+    chatInput.disabled = true;
+    sendBtn.disabled = true;
+}
+
+// ============================================================
+// MODAL
+// ============================================================
+function openModal(char = null) {
+    if (char) {
+        modalTitle.textContent = 'Edit Character';
+        editCharId.value = char.id;
+        charName.value = char.name;
+        charPersonality.value = char.personality;
+        charBackstory.value = char.backstory;
+        charAppearance.value = char.appearance;
+        charTraits.value = char.traits.join(', ');
+        charSystemPrompt.value = char.systemPrompt || DEFAULT_SYSTEM;
+    } else {
+        modalTitle.textContent = 'Create Character';
+        editCharId.value = '';
+        charName.value = '';
+        charPersonality.value = '';
+        charBackstory.value = '';
+        charAppearance.value = '';
+        charTraits.value = '';
+        charSystemPrompt.value = DEFAULT_SYSTEM;
+    }
+    modal.classList.add('active');
+    setTimeout(() => charName.focus(), 100);
+}
+
+function closeModal() { modal.classList.remove('active'); }
+
+function saveModal() {
+    const data = {
+        name: charName.value,
+        personality: charPersonality.value,
+        backstory: charBackstory.value,
+        appearance: charAppearance.value,
+        traits: charTraits.value,
+        systemPrompt: charSystemPrompt.value,
+    };
+    if (!data.name) { showToast('Please enter a name', 'error'); return; }
+    const id = editCharId.value;
+    if (id) updateCharacter(id, data);
+    else createCharacter(data);
+    closeModal();
+}
+
+window.editCharacter = function(id) {
+    const char = getCharacter(id);
+    if (char) openModal(char);
+};
+
+// ============================================================
+// CHAT
+// ============================================================
+function addMessage(id, role, content) {
+    if (!chatHistory[id]) chatHistory[id] = [];
+    chatHistory[id].push({ role, content, timestamp: Date.now() });
+    saveData();
+    if (currentCharId === id) renderChatMessages(id);
+}
+
+async function sendMessage() {
+    if (isGenerating) return;
+    const text = chatInput.value.trim();
+    if (!text) return;
+    if (!currentCharId) { showToast('Select a character first', 'warning'); return; }
+    const char = getCharacter(currentCharId);
+    if (!char) { showToast('Character not found', 'error'); return; }
+    chatInput.value = '';
+    addMessage(currentCharId, 'user', text);
+    isGenerating = true;
+    sendBtn.disabled = true;
+    sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    const history = getChat(currentCharId);
+    const msgs = history.slice(-10).map(m => ({
+        role: m.role === 'user' ? 'user' : 'assistant',
+        content: m.content
+    }));
+    const systemPrompt = buildSystemPrompt(char);
+    try {
+        const response = await callAI(systemPrompt, msgs, text);
+        addMessage(currentCharId, 'ai', response);
+    } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+        addMessage(currentCharId, 'ai', '*Error generating response. Please try again.*');
+    }
+    isGenerating = false;
+    sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
+    sendBtn.disabled = false;
+    chatInput.focus();
+}
+
+function buildSystemPrompt(char) {
+    let parts = [char.systemPrompt || DEFAULT_SYSTEM];
+    if (char.personality) parts.push(`Personality: ${char.personality}`);
+    if (char.backstory) parts.push(`Backstory: ${char.backstory}`);
+    if (char.appearance) parts.push(`Appearance: ${char.appearance}`);
+    if (char.traits.length) parts.push(`Traits: ${char.traits.join(', ')}`);
+    parts.push(`Your name is ${char.name}. Respond as this character.`);
+    return parts.join('\n');
+}
+
+// ============================================================
+// AI API
+// ============================================================
+async function callAI(systemPrompt, history, userMsg) {
+    const messages = [{ role: 'system', content: systemPrompt }, ...history, { role: 'user', content: userMsg }];
+    if (CONFIG.groq.key && CONFIG.groq.key !== 'gsk_your_free_key_here') {
+        try {
+            return await callGroq(messages);
+        } catch (e) {
+            console.warn('Groq failed, falling back to HF:', e);
+            return await callHuggingFace(messages);
         }
+    }
+    return await callHuggingFace(messages);
+}
 
-        modelBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                modelBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                state.selectedModel = btn.dataset.model;
-                state.isImageMode = state.selectedModel === 'sd-image';
-                if (state.isImageMode) {
-                    promptInput.placeholder = 'Describe the image you want to generate...\nExample: "A cyberpunk city with neon lights, raining, dramatic lighting"';
-                } else {
-                    promptInput.placeholder = 'Describe what you want to create...\nExample: "Write a short story about a robot learning to paint"';
-                }
-                showToast(`Switched to ${btn.textContent.trim()}`, 'info');
-            });
-        });
+async function callGroq(messages) {
+    const resp = await fetch(CONFIG.groq.url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${CONFIG.groq.key}` },
+        body: JSON.stringify({
+            model: CONFIG.groq.models.llama3,
+            messages,
+            temperature: 0.8,
+            max_tokens: 512,
+        })
+    });
+    if (!resp.ok) throw new Error(`Groq API error: ${resp.status}`);
+    const data = await resp.json();
+    return data.choices[0].message.content;
+}
 
-        temperature.addEventListener('input', () => {
-            tempDisplay.textContent = parseFloat(temperature.value).toFixed(1);
-        });
+async function callHuggingFace(messages) {
+    const model = 'meta-llama/Meta-Llama-3-8B-Instruct';
+    const url = CONFIG.hf.url + model;
+    const headers = { 'Content-Type': 'application/json' };
+    if (CONFIG.hf.key) headers['Authorization'] = `Bearer ${CONFIG.hf.key}`;
+    const prompt = messages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n') + '\nASSISTANT:';
+    const resp = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ inputs: prompt, parameters: { max_new_tokens: 512, temperature: 0.8, do_sample: true } })
+    });
+    if (!resp.ok) throw new Error(`HF API error: ${resp.status}`);
+    const data = await resp.json();
+    return data.generated_text || data[0]?.generated_text || 'No response';
+}
 
-        async function callGroq(model, prompt, temp, tokens) {
-            const modelMap = CONFIG.groq.models;
-            const modelName = modelMap[model] || modelMap.llama3;
-            const response = await fetch(CONFIG.groq.url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${CONFIG.groq.key}` },
-                body: JSON.stringify({
-                    model: modelName,
-                    messages: [
-                        { role: 'system', content: 'You are a creative AI assistant. Provide detailed, thoughtful, and well-structured responses.' },
-                        { role: 'user', content: prompt }
-                    ],
-                    temperature: parseFloat(temp),
-                    max_tokens: parseInt(tokens),
-                })
-            });
-            if (!response.ok) {
-                const error = await response.text();
-                throw new Error(`Groq API error: ${response.status} - ${error}`);
-            }
-            const data = await response.json();
-            return data.choices[0].message.content;
-        }
+// ============================================================
+// EVENT BINDINGS
+// ============================================================
+$('newCharBtn').addEventListener('click', () => openModal());
+$('modalCancel').addEventListener('click', closeModal);
+$('modalSave').addEventListener('click', saveModal);
+modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+$('sendBtn').addEventListener('click', sendMessage);
+chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
 
-        async function callHuggingFace(model, prompt, isImage = false) {
-            const modelMap = CONFIG.huggingface.models;
-            const modelName = modelMap[model] || modelMap.llama3;
-            const url = CONFIG.huggingface.url + modelName;
-            const headers = { 'Content-Type': 'application/json' };
-            if (CONFIG.huggingface.key) headers['Authorization'] = `Bearer ${CONFIG.huggingface.key}`;
-
-            if (isImage) {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers,
-                    body: JSON.stringify({
-                        inputs: prompt,
-                        parameters: { negative_prompt: 'blurry, bad quality, distorted', num_inference_steps: 28, guidance_scale: 7.5 }
-                    })
-                });
-                if (!response.ok) {
-                    const error = await response.text();
-                    throw new Error(`Hugging Face Image API error: ${response.status} - ${error}`);
-                }
-                const blob = await response.blob();
-                const imageUrl = URL.createObjectURL(blob);
-                return `<img src="${imageUrl}" alt="Generated image" />`;
-            } else {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers,
-                    body: JSON.stringify({
-                        inputs: prompt,
-                        parameters: { max_new_tokens: 512, temperature: 0.8, do_sample: true }
-                    })
-                });
-                if (!response.ok) {
-                    const error = await response.text();
-                    throw new Error(`Hugging Face Text API error: ${response.status} - ${error}`);
-                }
-                const data = await response.json();
-                if (Array.isArray(data) && data.length > 0) {
-                    return data[0].generated_text || data[0].content || JSON.stringify(data);
-                }
-                return data.generated_text || JSON.stringify(data);
-            }
-        }
-
-        async function generate() {
-            if (state.isGenerating) return;
-            const prompt = promptInput.value.trim();
-            if (!prompt) { showToast('Please enter a prompt first', 'warning'); return; }
-
-            state.isGenerating = true;
-            generateBtn.classList.add('loading');
-            generateBtn.disabled = true;
-
-            const temp = temperature.value;
-            const tokens = maxTokens.value;
-
-            outputContent.innerHTML = `
-                <div class="placeholder" style="min-height:160px;">
-                    <i class="fas fa-circle-notch fa-spin" style="font-size:32px;color:var(--accent);"></i>
-                    <span>Generating... this may take a few seconds</span>
-                    <span style="font-size:12px;opacity:0.5;">Using ${state.selectedModel} ${state.isImageMode ? '(image)' : '(text)'}</span>
-                </div>
-            `;
-
-            try {
-                let result;
-                if (state.isImageMode) {
-                    result = await callHuggingFace('sd-image', prompt, true);
-                } else {
-                    if (CONFIG.groq.key && CONFIG.groq.key !== 'gsk_your_free_key_here') {
-                        try {
-                            result = await callGroq(state.selectedModel, prompt, temp, tokens);
-                        } catch (e) {
-                            console.warn('Groq failed, falling back to Hugging Face:', e);
-                            result = await callHuggingFace(state.selectedModel, prompt, false);
-                        }
-                    } else {
-                        result = await callHuggingFace(state.selectedModel, prompt, false);
-                    }
-                }
-
-                outputContent.innerHTML = result;
-                state.outputText = result;
-                if (!state.isImageMode) {
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = result;
-                    state.outputText = tempDiv.textContent || result;
-                } else {
-                    state.outputText = result;
-                }
-                showToast('✨ Generation complete!', 'success');
-            } catch (error) {
-                console.error('Generation error:', error);
-                outputContent.innerHTML = `
-                    <div class="placeholder" style="min-height:160px;color:#ef4444;">
-                        <i class="fas fa-exclamation-triangle" style="font-size:32px;"></i>
-                        <span>Error generating content</span>
-                        <span style="font-size:13px;opacity:0.7;">${error.message || 'Unknown error'}</span>
-                        <span style="font-size:12px;opacity:0.5;margin-top:8px;">Try again or switch models</span>
-                    </div>
-                `;
-                showToast(`Error: ${error.message || 'Unknown error'}`, 'error');
-            }
-
-            state.isGenerating = false;
-            generateBtn.classList.remove('loading');
-            generateBtn.disabled = false;
-        }
-
-        $('#copyBtn').addEventListener('click', () => {
-            const text = state.outputText;
-            if (!text || text.includes('placeholder')) { showToast('Nothing to copy yet', 'warning'); return; }
-            if (state.isImageMode) {
-                const img = outputContent.querySelector('img');
-                if (img) {
-                    navigator.clipboard.writeText(img.src).then(() => showToast('Image URL copied!', 'success'))
-                        .catch(() => showToast('Failed to copy', 'error'));
-                }
-                return;
-            }
-            navigator.clipboard.writeText(state.outputText).then(() => showToast('Copied to clipboard!', 'success'))
-                .catch(() => {
-                    const textarea = document.createElement('textarea');
-                    textarea.value = state.outputText;
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textarea);
-                    showToast('Copied!', 'success');
-                });
-        });
-
-        $('#downloadBtn').addEventListener('click', () => {
-            const text = state.outputText;
-            if (!text || text.includes('placeholder')) { showToast('Nothing to download yet', 'warning'); return; }
-            if (state.isImageMode) {
-                const img = outputContent.querySelector('img');
-                if (img) {
-                    const link = document.createElement('a');
-                    link.href = img.src;
-                    link.download = `dream-ai-${Date.now()}.png`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    showToast('Image downloaded!', 'success');
-                }
-                return;
-            }
-            const blob = new Blob([state.outputText], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `dream-ai-${Date.now()}.txt`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-            showToast('Downloaded!', 'success');
-        });
-
-        $('#clearBtn').addEventListener('click', () => {
-            outputContent.innerHTML = `
-                <div class="placeholder">
-                    <i class="fas fa-robot"></i>
-                    <span>Your creation will appear here...</span>
-                    <span style="font-size:12px;opacity:0.5;">Cleared</span>
-                </div>
-            `;
-            state.outputText = '';
-            showToast('Cleared', 'info');
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); generate(); }
-        });
-
-        generateBtn.addEventListener('click', generate);
-
-        if (!CONFIG.groq.key || CONFIG.groq.key === 'gsk_your_free_key_here') {
-            console.info('💡 Get a free Groq API key at https://console.groq.com');
-            showToast('Using Hugging Face (free, rate-limited). Get a Groq key for faster generation.', 'info');
-        }
-
-        showToast('Ready! Choose a model and enter a prompt.', 'info');
-        console.log('🚀 Dream Multi-AI loaded successfully!');
-    </script>
+// ============================================================
+// INIT
+// ============================================================
+loadData();
+renderCharacters();
+if (characters.length > 0) {
+    selectCharacter(characters[0].id);
+} else {
+    renderEmptyChat();
+}
+if (!CONFIG.groq.key || CONFIG.groq.key === 'gsk_your_free_key_here') {
+    apiDot.className = 'dot offline';
+    apiLabel.textContent = 'HF (limited)';
+    showToast('💡 Get a free Groq key at console.groq.com for faster responses', 'info');
+}
+console.log('🎭 Dream Multi-AI Character Generator loaded!');
+console.log('📚 Characters:', characters.length);
+</script>
 </body>
 </html>

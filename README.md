@@ -1,14 +1,16 @@
-# Dream Multi-AI Generator
+# Dream Multi-AI - Character Generator & Chat
 
-A free, open-source AI text and image generation tool that runs entirely in your browser. No API key required!
+A free, open-source AI character generator and chat system. Create characters with unique personalities, backstories, and appearances, then chat with them in real-time.
 
 ## ✨ Features
 
-- **Multiple AI Models**: Llama 3, Mixtral, Gemma for text, Stable Diffusion for images
-- **Free & Open Source**: No hidden costs, no tracking
-- **Zero Setup**: Runs directly in your browser
+- **Create Characters**: Name, personality, backstory, appearance, traits
+- **Chat with Characters**: Real-time conversation with AI characters
+- **Character Library**: Save and manage multiple characters
+- **AI-Powered Responses**: Uses Groq (fast) or Hugging Face (free)
+- **Persistent Storage**: All characters and chats saved locally
 - **Modern UI**: Dark theme, responsive, mobile-friendly
-- **Export Options**: Copy or download generated content
+- **Zero Setup**: Runs directly in your browser
 
 ## 🚀 Live Demo
 
@@ -16,14 +18,14 @@ Visit: [https://alsania-dev.github.io/dream-multiai/](https://alsania-dev.github
 
 ## 🛠️ How to Use
 
-1. Choose a model (Llama 3, Mixtral, Gemma, or Stable Diffusion)
-2. Enter your prompt
-3. Click Generate
-4. Copy or download the result
+1. **Create a Character**: Click "New Character" and fill in the details
+2. **Select a Character**: Click on any character in the sidebar
+3. **Start Chatting**: Type a message and press Enter or click Send
+4. **Edit/Delete**: Use the icons on each character card
 
-## 🔑 Get a Groq API Key (Optional)
+## 🔑 Get a Groq API Key (Optional but Recommended)
 
-For faster generation without rate limits:
+For faster responses and better quality:
 
 1. Go to [console.groq.com](https://console.groq.com)
 2. Sign up and create an API key
@@ -32,9 +34,18 @@ For faster generation without rate limits:
 ## 📦 Tech Stack
 
 - HTML5, CSS3, JavaScript
-- Groq API (text generation)
-- Hugging Face API (text + image generation)
+- Groq API (fast text generation)
+- Hugging Face API (free fallback)
+- LocalStorage (data persistence)
 - Font Awesome (icons)
+
+## 📁 File Structure
+
+```
+dream-multiai/
+├── index.html    # Main application (796 lines)
+└── README.md     # This file
+```
 
 ## 🤝 Contributing
 
