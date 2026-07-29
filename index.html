@@ -930,11 +930,18 @@ async function generateAvatar(prompt) {
 // IMAGE GENERATION
 // ============================================================
 async function callImageAPI(prompt, size = 512) {
-    const encodedPrompt = encodeURIComponent(prompt);
-    const url = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${size}&height=${size}&nologo=true&seed=${Date.now()}`;
-    console.log("Generating image with Pollinations.ai:", prompt.slice(0, 60) + "...");
-    const resp = await fetch(url, { method: "GET", headers: { "Accept": "image/*" } });
-    if (!resp.ok) { const errText = await resp.text(); throw new Error(`Image gen failed: ${resp.status}`); }
+    const url = "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5";
+    const headers = { "Content-Type": "application/json" };
+    if (CONFIG.hf.key) headers["Authorization"] = "Bearer " + CONFIG.hf.key;
+    const resp = await fetch(url, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+            inputs: prompt,
+            parameters: { num_inference_steps: 20, guidance_scale: 7.5, width: size, height: size }
+        })
+    });
+    if (!resp.ok) { const err = await resp.text(); throw new Error("Image gen failed: " + resp.status); }
     const blob = await resp.blob();
     return URL.createObjectURL(blob);
 }
