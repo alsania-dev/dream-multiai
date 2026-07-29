@@ -119,6 +119,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         .character-list { display: flex; flex-direction: column; gap: 6px; }
         .character-item {
@@ -148,11 +150,7 @@
             font-size: 16px;
             color: var(--text-muted);
         }
-        .character-item .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .character-item .avatar img { width: 100%; height: 100%; object-fit: cover; }
         .character-item .info { flex: 1; min-width: 0; }
         .character-item .name { font-size: 14px; font-weight: 500; }
         .character-item .sub { font-size: 11px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -173,6 +171,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         .chat-header .left { display: flex; align-items: center; gap: 12px; }
         .chat-header .avatar {
@@ -192,6 +192,7 @@
         .chat-header .avatar img { width: 100%; height: 100%; object-fit: cover; }
         .chat-header .char-name { font-size: 18px; font-weight: 600; }
         .chat-header .char-status { font-size: 12px; color: var(--text-muted); }
+        .chat-header .actions { display: flex; gap: 6px; flex-wrap: wrap; }
         .chat-messages {
             flex: 1;
             overflow-y: auto;
@@ -261,7 +262,7 @@
             border: 1px solid var(--border-color);
             border-radius: var(--radius);
             padding: 28px;
-            max-width: 520px;
+            max-width: 540px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
@@ -284,6 +285,7 @@
         }
         .modal input:focus, .modal textarea:focus { border-color: var(--accent); }
         .modal textarea { min-height: 60px; resize: vertical; }
+        .modal select { appearance: auto; }
         .modal .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; flex-wrap: wrap; }
         .modal .avatar-preview {
             display: flex;
@@ -307,6 +309,24 @@
         }
         .modal .avatar-preview .preview img { width: 100%; height: 100%; object-fit: cover; }
         .modal .avatar-preview .gen-btn { flex: 1; }
+        .modal .style-selector {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .modal .style-btn {
+            padding: 4px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+            transition: var(--transition);
+        }
+        .modal .style-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+        .modal .style-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
         .toast {
             position: fixed;
             bottom: 30px;
@@ -397,6 +417,11 @@
                     <span>Create your first character</span>
                 </div>
             </div>
+            <div style="margin-top:12px;display:flex;gap:6px;flex-wrap:wrap;">
+                <button class="btn btn-sm" id="exportAllBtn"><i class="fas fa-file-export"></i> Export All</button>
+                <button class="btn btn-sm" id="importBtn"><i class="fas fa-file-import"></i> Import</button>
+                <input type="file" id="importFile" accept=".json" style="display:none;" />
+            </div>
         </aside>
         <section class="chat-area">
             <div class="chat-header">
@@ -407,9 +432,13 @@
                         <div class="char-status" id="chatCharStatus">Choose or create a character to start chatting</div>
                     </div>
                 </div>
-                <div class="api-status">
-                    <span class="dot online" id="apiDot"></span>
-                    <span id="apiLabel">Groq</span>
+                <div class="actions">
+                    <button class="btn btn-sm" id="exportCharBtn" title="Export Character"><i class="fas fa-download"></i></button>
+                    <button class="btn btn-sm" id="genStoryBtn" title="Generate Backstory/Story"><i class="fas fa-book"></i></button>
+                    <div class="api-status">
+                        <span class="dot online" id="apiDot"></span>
+                        <span id="apiLabel">Groq</span>
+                    </div>
                 </div>
             </div>
             <div class="chat-messages" id="chatMessages">
@@ -435,7 +464,15 @@
         <input type="text" id="charName" placeholder="e.g. Captain Zara" />
         <div class="avatar-preview">
             <div class="preview" id="avatarPreview"><i class="fas fa-user"></i></div>
-            <button class="btn btn-primary gen-btn" id="genAvatarBtn"><i class="fas fa-wand-magic-sparkles"></i> Generate Portrait</button>
+            <div style="flex:1;">
+                <div class="style-selector" id="styleSelector">
+                    <button class="style-btn active" data-style="fantasy">Fantasy</button>
+                    <button class="style-btn" data-style="anime">Anime</button>
+                    <button class="style-btn" data-style="realistic">Realistic</button>
+                    <button class="style-btn" data-style="cyberpunk">Cyberpunk</button>
+                </div>
+                <button class="btn btn-primary gen-btn" id="genAvatarBtn" style="width:100%;"><i class="fas fa-wand-magic-sparkles"></i> Generate Portrait</button>
+            </div>
         </div>
         <label>Personality</label>
         <textarea id="charPersonality" placeholder="e.g. Brave, witty, fiercely loyal to her crew..."></textarea>
@@ -477,6 +514,13 @@ const CONFIG = {
 };
 const DEFAULT_SYSTEM = `You are a character in a story. Respond in character, staying true to your personality, backstory, and appearance. Keep responses natural and conversational. Never break character.`;
 
+const STYLE_PROMPTS = {
+    fantasy: 'fantasy character portrait, medieval, magical, D&D style, epic, detailed, digital art',
+    anime: 'anime style character portrait, vibrant colors, expressive eyes, anime art style, detailed',
+    realistic: 'realistic character portrait, hyperrealistic, detailed face, professional photography, 8k',
+    cyberpunk: 'cyberpunk character portrait, neon lights, futuristic, sci-fi, dark atmosphere, digital art'
+};
+
 // ============================================================
 // STATE
 // ============================================================
@@ -486,6 +530,7 @@ let chatHistory = {};
 let isGenerating = false;
 let isGeneratingImage = false;
 let tempAvatar = null;
+let selectedStyle = 'fantasy';
 
 // ============================================================
 // DOM REFS
@@ -514,6 +559,7 @@ const toast = $('toast');
 const toastMsg = $('toastMsg');
 const apiDot = $('apiDot');
 const apiLabel = $('apiLabel');
+const styleBtns = document.querySelectorAll('.style-btn');
 let toastTimer = null;
 
 // ============================================================
@@ -607,6 +653,117 @@ function getCharacter(id) { return characters.find(c => c.id === id); }
 function getChat(id) { return chatHistory[id] || []; }
 
 // ============================================================
+// EXPORT / IMPORT
+// ============================================================
+function exportCharacter(id) {
+    const char = getCharacter(id);
+    if (!char) { showToast('No character selected', 'warning'); return; }
+    const data = {
+        version: '1.0',
+        exported: new Date().toISOString(),
+        character: char,
+        chat: getChat(id)
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${char.name}-character.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast(`📦 Exported "${char.name}"`, 'success');
+}
+
+function exportAllCharacters() {
+    if (characters.length === 0) { showToast('No characters to export', 'warning'); return; }
+    const data = {
+        version: '1.0',
+        exported: new Date().toISOString(),
+        characters: characters,
+        chatHistory: chatHistory
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dream-characters-${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast(`📦 Exported ${characters.length} characters`, 'success');
+}
+
+function importCharacters(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (data.characters && Array.isArray(data.characters)) {
+                // Merge import
+                const existingIds = new Set(characters.map(c => c.id));
+                let imported = 0;
+                for (const char of data.characters) {
+                    if (!existingIds.has(char.id)) {
+                        characters.push(char);
+                        chatHistory[char.id] = data.chatHistory?.[char.id] || [];
+                        imported++;
+                    }
+                }
+                saveData();
+                renderCharacters();
+                showToast(`📥 Imported ${imported} characters`, 'success');
+                if (characters.length > 0 && !currentCharId) selectCharacter(characters[0].id);
+            } else {
+                showToast('Invalid import file', 'error');
+            }
+        } catch (err) {
+            showToast('Error importing: ' + err.message, 'error');
+        }
+    };
+    reader.readAsText(file);
+}
+
+// ============================================================
+// STORY GENERATOR
+// ============================================================
+async function generateStory() {
+    const char = getCharacter(currentCharId);
+    if (!char) { showToast('Select a character first', 'warning'); return; }
+    if (isGenerating) return;
+    isGenerating = true;
+    const btn = $('genStoryBtn');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    btn.disabled = true;
+    try {
+        const prompt = `Write a detailed backstory or origin story for a character named "${char.name}".
+Personality: ${char.personality || 'Mysterious'}
+Traits: ${char.traits.join(', ') || 'Various'}
+Appearance: ${char.appearance || 'Unique'}
+
+Write a compelling narrative (300-500 words) that explains their origin, key life events, and what drives them.`;
+        const response = await callAIForStory(prompt);
+        addMessage(currentCharId, 'ai', `📖 **Backstory for ${char.name}**\n\n${response}`);
+        showToast('📖 Story generated!', 'success');
+    } catch (e) {
+        showToast('Error generating story: ' + e.message, 'error');
+    }
+    isGenerating = false;
+    btn.innerHTML = '<i class="fas fa-book"></i>';
+    btn.disabled = false;
+}
+
+async function callAIForStory(prompt) {
+    const messages = [{ role: 'user', content: prompt }];
+    if (CONFIG.groq.key && CONFIG.groq.key !== 'gsk_your_free_key_here') {
+        try { return await callGroq(messages); } catch (e) { return await callHuggingFace(messages); }
+    }
+    return await callHuggingFace(messages);
+}
+
+// ============================================================
 // AVATAR
 // ============================================================
 function getAvatarHtml(char) {
@@ -645,7 +802,7 @@ async function callImageAPI(prompt) {
         body: JSON.stringify({
             inputs: prompt,
             parameters: {
-                negative_prompt: 'blurry, bad quality, distorted, ugly, deformed',
+                negative_prompt: 'blurry, bad quality, distorted, ugly, deformed, extra limbs',
                 num_inference_steps: 25,
                 guidance_scale: 7.5,
                 width: 512,
@@ -655,7 +812,7 @@ async function callImageAPI(prompt) {
     });
     if (!resp.ok) {
         const err = await resp.text();
-        throw new Error(`Image API error: ${resp.status} - ${err}`);
+        throw new Error(`Image API error: ${resp.status}`);
     }
     const blob = await resp.blob();
     return URL.createObjectURL(blob);
@@ -866,12 +1023,7 @@ function buildSystemPrompt(char) {
 async function callAI(systemPrompt, history, userMsg) {
     const messages = [{ role: 'system', content: systemPrompt }, ...history, { role: 'user', content: userMsg }];
     if (CONFIG.groq.key && CONFIG.groq.key !== 'gsk_your_free_key_here') {
-        try {
-            return await callGroq(messages);
-        } catch (e) {
-            console.warn('Groq failed, falling back to HF:', e);
-            return await callHuggingFace(messages);
-        }
+        try { return await callGroq(messages); } catch (e) { return await callHuggingFace(messages); }
     }
     return await callHuggingFace(messages);
 }
@@ -918,15 +1070,46 @@ modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); }
 $('sendBtn').addEventListener('click', sendMessage);
 chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
 
+// Style selector
+styleBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        styleBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedStyle = btn.dataset.style;
+    });
+});
+
+// Generate avatar with selected style
 genAvatarBtn.addEventListener('click', () => {
     const name = charName.value.trim() || 'Character';
     const personality = charPersonality.value.trim() || 'a mysterious figure';
     const appearance = charAppearance.value.trim() || '';
+    const stylePrompt = STYLE_PROMPTS[selectedStyle] || STYLE_PROMPTS.fantasy;
     let prompt = `Portrait of ${name}, ${personality}`;
     if (appearance) prompt += `, ${appearance}`;
-    prompt += ', character design, digital art, fantasy, detailed, beautiful, professional portrait';
+    prompt += `, ${stylePrompt}`;
     generateAvatar(prompt);
 });
+
+// Export buttons
+$('exportCharBtn').addEventListener('click', () => {
+    if (currentCharId) exportCharacter(currentCharId);
+    else showToast('Select a character first', 'warning');
+});
+
+$('exportAllBtn').addEventListener('click', exportAllCharacters);
+
+// Import
+$('importBtn').addEventListener('click', () => $('importFile').click());
+$('importFile').addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        importCharacters(e.target.files[0]);
+        e.target.value = '';
+    }
+});
+
+// Story generator
+$('genStoryBtn').addEventListener('click', generateStory);
 
 // ============================================================
 // INIT
