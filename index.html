@@ -930,43 +930,11 @@ async function generateAvatar(prompt) {
 // IMAGE GENERATION
 // ============================================================
 async function callImageAPI(prompt, size = 512) {
-    const model = CONFIG.hf.models.image;
-    const url = CONFIG.hf.url + model;
-    const headers = { 'Content-Type': 'application/json' };
-    if (CONFIG.hf.key) headers['Authorization'] = `Bearer ${CONFIG.hf.key}`;
-    
-    const requestBody = {
-        inputs: prompt,
-        parameters: {
-            negative_prompt: 'blurry, bad quality, distorted, ugly, deformed, extra limbs, nsfw',
-            num_inference_steps: 25,
-            guidance_scale: 7.5,
-            width: size,
-            height: size
-        }
-    };
-    
-    console.log('Generating image:', prompt.slice(0, 60) + '...');
-    
-    const resp = await fetch(url, {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(requestBody)
-    });
-    
-    if (!resp.ok) {
-        let errText = await resp.text();
-        console.error('API Error:', resp.status, errText);
-        
-        if (resp.status === 503) {
-            throw new Error('Model is loading. Please wait 30 seconds and try again.');
-        }
-        if (resp.status === 429) {
-            throw new Error('Rate limit reached. Please wait a moment and try again.');
-        }
-        throw new Error(`API error (${resp.status}): ${errText.slice(0, 150)}`);
-    }
-    
+    const encodedPrompt = encodeURIComponent(prompt);
+    const url = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${size}&height=${size}&nologo=true&seed=${Date.now()}`;
+    console.log("Generating image with Pollinations.ai:", prompt.slice(0, 60) + "...");
+    const resp = await fetch(url, { method: "GET", headers: { "Accept": "image/*" } });
+    if (!resp.ok) { const errText = await resp.text(); throw new Error(`Image gen failed: ${resp.status}`); }
     const blob = await resp.blob();
     return URL.createObjectURL(blob);
 }
